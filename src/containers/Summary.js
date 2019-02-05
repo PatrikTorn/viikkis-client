@@ -4,6 +4,7 @@ import { Button, Form, FormGroup, Input, Label } from 'reactstrap';
 import Editor from '../editor';
 import { Connect } from '../actions';
 import { createMarkdownTOC, convertMarkdownToHtml } from '../tools/articleTools';
+import { MD_CONFIG, MD_CONFIG_TOC, SUMMARY_BOTTOM, SUMMARY_TOP } from '../constants';
 class Summary extends Component {
     constructor(props) {
         super(props);
@@ -11,28 +12,8 @@ class Summary extends Component {
         this.week = this.props.config.week;
         this.state = {
             value: '',
-            config: `
-otsikon_ylle: Tuotantotalouden kilta Indecs
-otsikon_alle: Viikko 1
-sposti_aihe: Indecsin Viikkotiedote 1 — Indecs' Newsletter 1
-url: http://www.google.fi
-nimi: Leevi Törnblom
-titteli: Sihteeri / Secretary
-kilta: Tuotantotalouden kilta Indecs Ry
-guild: Guild of Industrial Engineering and Management Indecs
-yliopisto: Tampereen teknillinen yliopisto
-university: Tampere University of Technology
-puhelin: 0408431989
-sposti: sihteeri@indecs.fi
-internet: www.indecs.fi
-`,
-toc:`
-
-# Sisällysluettelo - Table of Contents
-
-[TOC]
-
-`,
+            config: MD_CONFIG,
+            toc:MD_CONFIG_TOC,
             showModal: false
         }
     }
@@ -68,31 +49,8 @@ toc:`
     render() {
         const value = this.props.app.summary;
         const tableOfContents = createMarkdownTOC(this.props.app.summary);
-        const topValue = `
-<font class="margin"></font>
-<font class="top-kilta">Tuotantotalouden kilta Indecs</font>
-<font class="top-viikkotiedote">Viikkotiedote</font>
-<font class="top-numero">Numero ${this.week - 1} - Viikko ${this.week}</font>
-<font class="margin"></font>
-<font class="top-toc"> Sisällysluettelo - Table of contents</font>
-${tableOfContents}
-    `;
-
-        const bottomValue = `
-<font class="margin"></font>
-<font class="top-kilta">Terveisin - Regards</font>
-<font class="top-viikkotiedote">Leevi Törnblom</font>
-<font class="top-numero">Sihteeri / Secretary</font>
-<font class="bottom-default">Tuotantotalouden kilta Indecs ry</font>
-<font class="bottom-default">Guild of Industrial Engineering and Management Indecs</font>
-<font class="bottom-default">Tampereen yliopisto</font>
-<font class="bottom-default">Tampere University</font>
-<font class="bottom-default">0408431989</font>
-<font class="bottom-default">sihteeri@indecs.fi</font>
-<font class="bottom-default">[www.indecs.fi]www.indecs.fi</font>
-<font class="margin"></font>
-`;
-
+        const topValue = SUMMARY_TOP(this.week, tableOfContents);
+        const bottomValue = SUMMARY_BOTTOM;
         const editorStyle = {
             boxShadow: '#999 0 0 12px',
             borderRadius: '4px'

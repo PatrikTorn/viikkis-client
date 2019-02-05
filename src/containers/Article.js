@@ -10,11 +10,21 @@ class Main extends Component {
     constructor(props) {
         super(props);
         this.props.getText(value => this.setState({ value }));
+
+        this.props.onDisconnect(() => {
+            this.setState({disconnected:true});
+        });
+
+        // this.props.onDisconnect(() => {
+        //     this.setState({disconnected:true});
+        // });
+
         this.id = this.props.config.articleId;
         this.state = {
             value: '',
             autoSave: true,
-            previousValue: ''
+            previousValue: '',
+            disconnected:false
         }
     }
 
@@ -47,12 +57,31 @@ class Main extends Component {
         clearInterval(this.interval);
     }
 
+    reconnect() {
+        this.props.getArticle(this.id)
+        .then(({ action: { payload: { data } } }) => {
+            this.setState({
+                value: data.text,
+                previousValue:data.text,
+                disconnected:false
+            });
+            this.props.socket.emit('join room', data);
+        })
+        .catch(e => {
+            this.props.navigate('HOME');
+        })
+    }
 
     handleChange = value => {
-        this.setState({
-            value,
-        });
-        this.props.socket.emit('set text', value);
+        if(this.state.disconnected) {
+            this.reconnect();
+        }else {
+            this.setState({
+                value,
+            });
+            this.props.socket.emit('set text', value);
+        }
+
     }
 
     handleSave() {

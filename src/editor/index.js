@@ -1,11 +1,11 @@
 import React from 'react'
 import './index.css'
 import classNames from 'classnames'
-import marked from './helpers/marked'
 import textInsert from './helpers/insertText'
 import keydownListen from './helpers/keydownListen'
 import 'highlight.js/styles/tomorrow.css'
 import './fonts/iconfont.css'
+import { convertMarkdownToHtml } from '../tools/articleTools';
 
 class MdEditor extends React.Component {
     constructor(props) {
@@ -147,23 +147,21 @@ class MdEditor extends React.Component {
         this.props.onSave()
     }
 
-    massReplace(text, replacementArray) {
-        let results = text;
-        for (let [regex, replacement] of replacementArray) {
-          results = results.replace(regex, replacement);
-        }
-        return results;
-      }
+    isMobile() {
+        return this.state.width < 700;
+    }
 
     render() {
         const { preview, expand, line_index } = this.state
         const { value } = this.props
         const previewClass = classNames({
             'for-panel': true,
-            'for-preview-hidden': !preview
+            'for-preview-hidden': !preview,
+            
         })
         const editorClass = classNames({
-            'for-panel': true
+            'for-panel': true,
+            'for-editor-hidden':this.isMobile() ? preview : false
         })
         const previewActive = classNames({
             'for-active': preview
@@ -188,9 +186,10 @@ class MdEditor extends React.Component {
             return <ul className={lineNumStyles}>{list}</ul>
         }
 
+
         return (
             <div className={fullscreen} style={{ height: this.state.expand ? this.state.height : this.state.height-100 }}>
-                <div className="for-controlbar" style={{display:this.state.width < 700 ? 'block' : 'flex'}}>
+                <div className="for-controlbar" style={{display:this.isMobile() ? 'block' : 'flex'}}>
                     <ul>
                         <li data-type="h1" onClick={this.insert} title="Iso otsikko">
                             H1
@@ -219,6 +218,8 @@ class MdEditor extends React.Component {
                         <li data-type="table" onClick={this.insert} title="Taulukko">
                             <i className="fa fa-table" />
                         </li>
+                    </ul>
+                    <ul>
                         <li data-type="list" onClick={this.insert} title="Lista">
                             <i className="fa fa-list" />
                         </li>
@@ -228,8 +229,6 @@ class MdEditor extends React.Component {
                         <li data-type="listOl" onClick={this.insert} title="Numeroitu lista">
                             <i className="fa fa-list-ol" />
                         </li>
-                    </ul>
-                    <ul>
                         <li data-type="code" onClick={this.save} title="Tallenna (ctrl+s)">
                             <i className="foricon for-save" />
                         </li>
@@ -280,15 +279,7 @@ class MdEditor extends React.Component {
                     <div className={previewClass}>
                         <div
                             className="for-preview for-markdown-preview"
-                            dangerouslySetInnerHTML={{ __html: marked(
-                                this.props.topValue + this.massReplace(value,
-                                   [ [/^###(.*)/gm,    '<h3>$1</h3>'],
-                                    [/^##(.*)/gm,     '<h2>$1</h2>'],
-                                    [/^#(.*)/gm,      '<h1>$1</h1>'],
-                                    [/\?\[(.+?)\]\((.*\))/g, '<button class="customButton" href="$2">$1</button>'] ]
-                                    ) + this.props.bottomValue 
-                                    
-                                ) }}
+                            dangerouslySetInnerHTML={{ __html: convertMarkdownToHtml(value, this.props.topValue, this.props.bottomValue) }}
                         />
                     </div>
                 </div>

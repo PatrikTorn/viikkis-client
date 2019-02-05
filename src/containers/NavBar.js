@@ -13,6 +13,7 @@ class Nav extends Component {
             <Breadcrumb>
                 <BreadcrumbItem onClick={() => this.props.navigate('HOME')}><a href="javascript:void(0)">Viikkis {week}/{year}</a></BreadcrumbItem>
                 {(screen === "ARTICLE" || screen === "SUMMARY") && <BreadcrumbItem active> {title}</BreadcrumbItem>}
+
             </Breadcrumb>
         )
     }

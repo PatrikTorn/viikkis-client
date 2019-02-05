@@ -1,7 +1,11 @@
 import React, { Component } from 'react';
 import { Connect } from '../actions';
 import headerImage from '../images/viikkis.png';
+import { ButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
 class Header extends Component {
+    state = {
+        dropdownOpen:false
+    }
     logout(){
         localStorage.removeItem('email');
         localStorage.removeItem('password');
@@ -10,14 +14,26 @@ class Header extends Component {
     render() {
         return (
             <div>
+
                 <div style={styles.top}>
                     <div style={styles.left}>
                         <img src={headerImage} alt="Viikkis Indecs" style={{ height: 60 }} />
                     </div>
-                    <div style={styles.nav}>
-                    </div>
                     {this.props.app.logged && <div style={styles.right}>
-                        <i className="fa fa-sign-out-alt" style={{ fontSize: 30, color: 'white' }} onClick={() => this.logout()}></i>
+                    <ButtonDropdown isOpen={this.state.dropdownOpen} toggle={() => this.setState({dropdownOpen:!this.state.dropdownOpen})} direction={'left'}>
+                        <DropdownToggle>
+                        <i className="fa fa-bars" style={{ fontSize: 30, color: 'white' }}></i>
+                        </DropdownToggle>
+                        <DropdownMenu>
+                        <DropdownItem header>{this.props.app.user.email}</DropdownItem>
+                        <DropdownItem divider />
+                        <DropdownItem disabled><i className="fa fa-users" style={{marginRight:5}}></i> {this.props.app.sockets.length} paikalla</DropdownItem>
+                        <DropdownItem divider />
+                        <DropdownItem disabled><i className="fa fa-cog" style={{marginRight:5}}></i> Asetukset</DropdownItem>
+                        <DropdownItem divider />
+                        <DropdownItem onClick={() => this.logout()}><i className="fa fa-sign-out-alt" style={{marginRight:5}}></i>Kirjaudu ulos</DropdownItem>
+                        </DropdownMenu>
+                    </ButtonDropdown>
                     </div>}
                 </div>
             </div>
@@ -43,16 +59,18 @@ const styles = {
         alignItems: 'center',
         cursor:'pointer'
     },
-    nav: {
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center'
+    users: {
+        position:'absolute',
+        top:5,
+        right:5,
+        fontSize: 15, 
+        color: 'white'
     },
     right: {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'flex-end',
-        paddingRight: 20,
+        paddingRight: 10,
         cursor: 'pointer'
     },
 }

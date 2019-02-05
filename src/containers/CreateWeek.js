@@ -2,45 +2,12 @@ import React, { Component } from 'react'
 import { Connect } from '../actions';
 import { Button, Form, FormGroup, Label, Input, Col } from 'reactstrap';
 import { formatTitle } from '../tools/articleTools';
+import { TITLES } from '../constants';
 
 class CreateWeek extends Component {
 
     state = {
-        titles: [
-            {
-                fi: 'Yleistä',
-                en: 'General'
-            },
-            {
-                fi: 'Indecsin tapahtumat',
-                en: "Indecs events"
-            },
-            {
-                fi: "TREY tiedottaa",
-                en: "Student Union announces"
-            },
-            {
-                fi: "Tampereen Teekkarit tiedottaa",
-                en: "Teekkari Union of Tampere announces"
-            },
-            {
-                fi: "Yritystiimi tiedottaa",
-                en: "Corporate Relations Team announces"
-            },
-            {
-                fi: "Tulevat tapahtumat",
-                en: "Upcoming events"
-            },
-            {
-                fi: "ESTIEM asiaa",
-                en: "ESTIEM affairs"
-            },
-            {
-                fi: "Loppukevennys",
-                en: ""
-            }
-        ],
-
+        titles: TITLES,
     }
     createWeek() {
         if (this.state.titles.find(t => t.fi.trim() === "")) {

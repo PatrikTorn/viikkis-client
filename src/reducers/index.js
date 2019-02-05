@@ -1,7 +1,7 @@
 import { combineReducers } from 'redux';
 import appReducer from './appReducer';
 import io from 'socket.io-client';
-import {SOCKET_ENDPOINT} from '../tools/actionTools'
+import {SOCKET_ENDPOINT} from '../constants'
 import configReducer from './configReducer';
 const socketReducer = io(SOCKET_ENDPOINT);
 

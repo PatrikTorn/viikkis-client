@@ -9,6 +9,7 @@ import Nav from './NavBar';
 import Summary from './Summary';
 import Year from './WeekContainer';
 import { LoadingComponent } from '../components'
+import {SCREENS} from '../constants'
 
 
 const MainContainer = ({ navigation }) => {
@@ -38,7 +39,10 @@ class ScreenContainer extends Component {
     constructor(props) {
         super(props);
         this.props.socket.on('get rooms', (rooms) => this.props.setState({ rooms }));
+        this.props.socket.on('get sockets', (sockets) => this.props.setState({ sockets }));
         this.getText = (cb) => this.props.socket.on('get text', cb);
+        this.onDisconnect = (cb) => this.props.socket.on('disconnect', cb);
+        // connect reconnect disconnect (methods)
     }
 
     componentDidMount() {
@@ -56,10 +60,10 @@ class ScreenContainer extends Component {
 
     navigation() {
         switch (this.props.config.screen) {
-            case 'SUMMARY':
+            case SCREENS.SUMMARY:
                 return <Summary />
-            case 'ARTICLE':
-                return <Main getText={this.getText} />
+            case SCREENS.ARTICLE:
+                return <Main getText={this.getText} onDisconnect={this.onDisconnect} />
             default:
                 return <Year />
         }

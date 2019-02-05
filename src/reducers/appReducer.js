@@ -7,6 +7,7 @@ let initialState = {
     summary: '',
     logged: false,
     user: {},
+    sockets:[],
     text: ''
 };
 

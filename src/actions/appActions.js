@@ -1,5 +1,7 @@
-import {createActionPointers, API_ENDPOINT} from '../tools/actionTools';
+import {createActionPointers} from '../tools/actionTools';
+import {API_ENDPOINT} from '../constants';
 import axios from 'axios'
+import {_PASSWORD, _EMAIL} from '../secret';
 export const types = createActionPointers([
     `SET_STATE`,
     'GET_ARTICLES',
@@ -61,7 +63,7 @@ export const login = ({email, password}) => ({
     type:types.LOGIN.NAME,
     // payload:axios.post(`https://indecs.fi/viikkis/login.php`, JSON.stringify({email, password})),
     payload:async () => {
-        if(email === 'hallitus@indecs.fi' && password === 'L3d1v4l0'){
+        if(email === _EMAIL && password === _PASSWORD){
             return {email, password}
         }else {
             throw new Error('wrong password');

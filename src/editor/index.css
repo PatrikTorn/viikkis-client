@@ -74,6 +74,11 @@
   .for-container .for-editor .for-preview-hidden {
     display: none;
   }
+
+  .for-container .for-editor .for-editor-hidden {
+    display: none;
+  }
+
   .for-container .for-editor .for-editor-wrapper {
     line-height: 1.6;
   }
