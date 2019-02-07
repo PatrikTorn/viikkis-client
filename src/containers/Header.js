@@ -1,17 +1,47 @@
 import React, { Component } from 'react';
-import { Connect } from '../actions';
 import headerImage from '../images/viikkis.png';
 import { ButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
+import { connector, actions } from '../actions';
+
+const connect = connector(
+    state => ({
+        email:state.app.user.email,
+        logged:state.app.logged,
+        socketsLength:state.app.sockets.length
+    }), 
+    {
+        logout:actions.app.logout
+    }
+);
+
 class Header extends Component {
     state = {
         dropdownOpen:false
-    }
+    };
+
     logout(){
         localStorage.removeItem('email');
         localStorage.removeItem('password');
         this.props.logout();
     }
+
     render() {
+        const MenuButton = () => (
+            <ButtonDropdown isOpen={this.state.dropdownOpen} toggle={() => this.setState({dropdownOpen:!this.state.dropdownOpen})} direction={'left'}>
+                <DropdownToggle>
+                <i className="fa fa-bars" style={{ fontSize: 30, color: 'white' }}></i>
+                </DropdownToggle>
+                <DropdownMenu>
+                <DropdownItem header>{this.props.email}</DropdownItem>
+                <DropdownItem divider />
+                <DropdownItem disabled><i className="fa fa-users" style={{marginRight:5}}></i> {this.props.socketsLength} paikalla</DropdownItem>
+                <DropdownItem divider />
+                <DropdownItem disabled><i className="fa fa-cog" style={{marginRight:5}}></i> Asetukset</DropdownItem>
+                <DropdownItem divider />
+                <DropdownItem onClick={() => this.logout()}><i className="fa fa-sign-out-alt" style={{marginRight:5}}></i>Kirjaudu ulos</DropdownItem>
+                </DropdownMenu>
+            </ButtonDropdown>
+        );
         return (
             <div>
 
@@ -19,21 +49,8 @@ class Header extends Component {
                     <div style={styles.left}>
                         <img src={headerImage} alt="Viikkis Indecs" style={{ height: 60 }} />
                     </div>
-                    {this.props.app.logged && <div style={styles.right}>
-                    <ButtonDropdown isOpen={this.state.dropdownOpen} toggle={() => this.setState({dropdownOpen:!this.state.dropdownOpen})} direction={'left'}>
-                        <DropdownToggle>
-                        <i className="fa fa-bars" style={{ fontSize: 30, color: 'white' }}></i>
-                        </DropdownToggle>
-                        <DropdownMenu>
-                        <DropdownItem header>{this.props.app.user.email}</DropdownItem>
-                        <DropdownItem divider />
-                        <DropdownItem disabled><i className="fa fa-users" style={{marginRight:5}}></i> {this.props.app.sockets.length} paikalla</DropdownItem>
-                        <DropdownItem divider />
-                        <DropdownItem disabled><i className="fa fa-cog" style={{marginRight:5}}></i> Asetukset</DropdownItem>
-                        <DropdownItem divider />
-                        <DropdownItem onClick={() => this.logout()}><i className="fa fa-sign-out-alt" style={{marginRight:5}}></i>Kirjaudu ulos</DropdownItem>
-                        </DropdownMenu>
-                    </ButtonDropdown>
+                    {this.props.logged && <div style={styles.right}>
+                        <MenuButton />
                     </div>}
                 </div>
             </div>
@@ -41,7 +58,7 @@ class Header extends Component {
     }
 }
 
-export default Connect(Header)
+export default connect(Header)
 
 const styles = {
     top: {

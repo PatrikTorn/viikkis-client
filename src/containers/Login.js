@@ -1,12 +1,14 @@
 import React, { Component } from 'react';
-import {
-    Container, Col, Form,
-    FormGroup, Label, Input,
-    Button,
-} from 'reactstrap';
-import { Connect } from '../actions';
 import { toast } from 'react-toastify';
-// import './App.css';
+import { Button, Col, Container, Form, FormGroup, Input, Label } from 'reactstrap';
+import Header from './Header';
+import {connector, actions} from '../actions';
+const connect = connector(
+    state => null, 
+    {
+        login:actions.app.login
+    }
+);
 
 class Login extends Component {
     state = {
@@ -18,7 +20,7 @@ class Login extends Component {
     login() {
         this.props.login({ password: this.state.password, email: this.state.email })
             .then(() => {
-                if(this.state.rememberMe){
+                if (this.state.rememberMe) {
                     localStorage.setItem('email', this.state.email);
                     localStorage.setItem('password', this.state.password);
                 }
@@ -28,57 +30,60 @@ class Login extends Component {
 
     render() {
         return (
-            <div style={styles.wrapper}>
-                <Container style={styles.container}>
-                    <h2>Kirjaudu sisään</h2>
-                    <Form className="form">
-                        <Col>
-                            <FormGroup>
-                                <Label>Sähköposti</Label>
-                                <Input
-                                    type="email"
-                                    name="email"
-                                    id="exampleEmail"
-                                    placeholder="sposti@sposti.com"
-                                    value={this.state.email}
-                                    onChange={e => this.setState({ email: e.target.value })}
-                                />
-                            </FormGroup>
-                        </Col>
-                        <Col>
-                            <FormGroup>
-                                <Label for="examplePassword">Salasana</Label>
-                                <Input
-                                    type="password"
-                                    name="password"
-                                    id="examplePassword"
-                                    placeholder="********"
-                                    onChange={e => this.setState({ password: e.target.value })}
-                                    value={this.state.password}
-                                />
-                            </FormGroup>
-                        </Col>
-                        <Col>
-                            <FormGroup check>
-                                <Label check>
-                                <Input
-                                    id="rememberMe"
-                                    type="checkbox"
-                                    value={this.state.rememberMe}
-                                    onChange={e => this.setState({ rememberMe: e.target.value })}
-                                />{' '} Muista minut
-                                </Label>
-                            </FormGroup>
-                        </Col>
-                        <Button onClick={() => this.login()}>Kirjaudu sisään</Button>
-                    </Form>
-                </Container>
-            </div >
+            <div>
+                <Header />
+                <div style={styles.wrapper}>
+                    <Container style={styles.container}>
+                        <h2>Kirjaudu sisään</h2>
+                        <Form className="form">
+                            <Col>
+                                <FormGroup>
+                                    <Label>Sähköposti</Label>
+                                    <Input
+                                        type="email"
+                                        name="email"
+                                        id="exampleEmail"
+                                        placeholder="sposti@sposti.com"
+                                        value={this.state.email}
+                                        onChange={e => this.setState({ email: e.target.value })}
+                                    />
+                                </FormGroup>
+                            </Col>
+                            <Col>
+                                <FormGroup>
+                                    <Label for="examplePassword">Salasana</Label>
+                                    <Input
+                                        type="password"
+                                        name="password"
+                                        id="examplePassword"
+                                        placeholder="********"
+                                        onChange={e => this.setState({ password: e.target.value })}
+                                        value={this.state.password}
+                                    />
+                                </FormGroup>
+                            </Col>
+                            <Col>
+                                <FormGroup check>
+                                    <Label check>
+                                        <Input
+                                            id="rememberMe"
+                                            type="checkbox"
+                                            value={this.state.rememberMe}
+                                            onChange={e => this.setState({ rememberMe: e.target.value })}
+                                        />{' '} Muista minut
+                                    </Label>
+                                </FormGroup>
+                            </Col>
+                            <Button onClick={() => this.login()}>Kirjaudu sisään</Button>
+                        </Form>
+                    </Container>
+                </div >
+            </div>
         );
     }
 }
 
-export default Connect(Login);
+export default connect(Login);
 
 const styles = {
     container: {

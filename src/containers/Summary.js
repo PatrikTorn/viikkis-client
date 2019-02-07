@@ -1,55 +1,86 @@
 import React, { Component } from 'react';
-import Modal from 'react-responsive-modal';
-import { Button, Form, FormGroup, Input, Label } from 'reactstrap';
+import { Button, Form, FormGroup, Input, Modal, ModalHeader, ModalBody, ModalFooter, ButtonGroup } from 'reactstrap';
 import Editor from '../editor';
-import { Connect } from '../actions';
-import { createMarkdownTOC, convertMarkdownToHtml } from '../tools/articleTools';
+import { createMarkdownTOC, mdToHtml } from '../tools/articleTools';
 import { MD_CONFIG, MD_CONFIG_TOC, SUMMARY_BOTTOM, SUMMARY_TOP } from '../constants';
+import {connector, actions} from '../actions';
+import {mjml2html, sendEmail} from '../services/httpService';
+import {createMjml} from '../tools/articleTools';
+import {toast} from 'react-toastify';
+
+const connect = connector(
+    state => ({
+        year:state.config.year,
+        week:state.config.week,
+        now:state.config.now,
+        socket:state.socket,
+        summary:state.app.articles
+            .sort((a, b) => a.position - b.position)
+            .reduce((acc, a) => acc + '\n \n' + a.text, ``)
+    }), 
+    {
+        getWeek:actions.app.getWeek,
+        setPrevWeek:actions.config.setPrevWeek,
+        setNextWeek:actions.config.setNextWeek
+    }
+);
+
 class Summary extends Component {
-    constructor(props) {
-        super(props);
-        this.year = this.props.config.year;
-        this.week = this.props.config.week;
-        this.state = {
-            value: '',
-            config: MD_CONFIG,
-            toc:MD_CONFIG_TOC,
-            showModal: false
-        }
+    state = {
+        config: MD_CONFIG,
+        toc:MD_CONFIG_TOC,
+        showModal: false
     }
 
     componentDidMount() {
-        this.props.getSummary({ year: this.year, week: this.week })
+        this.props.getWeek({ year: this.props.year, week: this.props.week });
     }
 
     toggleModal() {
         this.setState({ showModal: !this.state.showModal })
     }
 
-    exportHtml(html){
+    createBlob(format, content) {
+        const fileName = `${this.props.year}-${this.props.week}-viikkis.${format}`;
         let element = document.createElement("a");
-        let file = new Blob([html], { type: 'text/plain' });
+        let file = new Blob([content], { type: 'text/plain' });
         element.href = URL.createObjectURL(file);
-        element.download = `${this.year}-${this.week}-viikkis.html`;
+        element.download = fileName;
         element.click();
     }
 
-    exportFile() {
-        let element = document.createElement("a");
-        let text = (this.state.config + this.state.toc + this.props.app.summary).replace(/\n/g, "\r\n");
-        let file = new Blob([text], { type: 'text/plain' });
-        element.href = URL.createObjectURL(file);
-        element.download = `${this.year}-${this.week}-viikkis.md`;
-        element.click();
+    exportHtml(){
+        // md -> mjml -> html
+        const tableOfContents = createMarkdownTOC(this.props.summary);
+        const mjml = createMjml([tableOfContents, this.props.summary]);
+        mjml2html(mjml)
+        .then(res => res.json())
+        .then(res => this.createBlob('html', res.html))
+        .catch(e => toast.error('virhe'))
     }
 
+    sendEmail(){
+        const tableOfContents = createMarkdownTOC(this.props.summary);
+        const mjml = createMjml([tableOfContents, this.props.summary]);
+        sendEmail(mjml)
+        .then(() => toast.success("Sähköposti lähetetty"))
+        .catch(e => toast.error("Ongelma sähköpostin lähetyksessä"))
+    }
 
+    exportMd() {
+        let content = (this.state.config + this.state.toc + this.props.summary).replace(/\n/g, "\r\n");
+        this.createBlob('md', content)
+    }
 
+    exportMjml() {
+        const tableOfContents = createMarkdownTOC(this.props.summary);
+        const mjml = createMjml([tableOfContents, this.props.summary]).replace(/\n/g, "\r\n");
+        this.createBlob('txt', mjml);
+    }
 
     render() {
-        const value = this.props.app.summary;
-        const tableOfContents = createMarkdownTOC(this.props.app.summary);
-        const topValue = SUMMARY_TOP(this.week, tableOfContents);
+        const tableOfContents = createMarkdownTOC(this.props.summary);
+        const topValue = SUMMARY_TOP(this.props.week, tableOfContents);
         const bottomValue = SUMMARY_BOTTOM;
         const editorStyle = {
             boxShadow: '#999 0 0 12px',
@@ -59,17 +90,23 @@ class Summary extends Component {
         return (
             <React.Fragment>
 
-                <Modal open={this.state.showModal} onClose={() => this.toggleModal()} center>
-                    <div style={{ minHeight: 300, width: 600 }}>
+                <Modal isOpen={this.state.showModal} toggle={() => this.toggleModal()}>
+                    <ModalHeader>Määritä sihteerin asetukset</ModalHeader>
+                    <ModalBody>
                         <Form>
                             <FormGroup>
-                                <Label for="config">Määritä sihteerin asetukset</Label>
                                 <Input type="textarea" style={{ height: 200 }} id="config" value={this.state.config} onChange={e => this.setState({ config: e.target.value })} />
-                                <Button color="success" block onClick={() => this.exportFile()}>Lataa .md -muodossa</Button>
-                                <Button color="primary" block onClick={() => this.exportHtml(convertMarkdownToHtml(value, topValue, bottomValue))}>Lataa .html -muodossa</Button>
                             </FormGroup>
                         </Form>
-                    </div>
+                    </ModalBody>
+                    <ModalFooter>
+                        <ButtonGroup>
+                            <Button color="success" onClick={() => this.exportMd()}>Lataa md</Button>
+                            <Button color="primary" onClick={() => this.exportHtml()}>Lataa html</Button>
+                            <Button color="secondary" onClick={() => this.exportMjml()}>Lataa mjml</Button>
+                            <Button color="warning" onClick={() => this.sendEmail()}>Lähetä sposti</Button>
+                        </ButtonGroup>
+                    </ModalFooter>
                 </Modal>
 
                 <Button color="success" block onClick={() => this.toggleModal()}>Lataa viikkis</Button>
@@ -78,7 +115,7 @@ class Summary extends Component {
                     <Editor
                         topValue={topValue}
                         bottomValue={bottomValue}
-                        value={value}
+                        value={this.props.summary}
                         onChange={() => { }}
                         onSave={() => { }}
                     />
@@ -88,4 +125,4 @@ class Summary extends Component {
     }
 }
 
-export default Connect(Summary)
+export default connect(Summary)

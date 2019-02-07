@@ -1,6 +1,6 @@
 export const API_ENDPOINT = 'http://viikkis.indecs.fi/api.php';
-export const SOCKET_ENDPOINT = 'http://viikkis.herokuapp.com';
-
+// export const SOCKET_ENDPOINT = 'http://viikkis.herokuapp.com';
+export const SOCKET_ENDPOINT = 'http://localhost:5000';
 
 export const TITLES = [
     {
@@ -56,7 +56,6 @@ university: Tampere University of Technology
 puhelin: 0408431989
 sposti: sihteeri@indecs.fi
 internet: www.indecs.fi
-
 `;
 
 export const MD_CONFIG_TOC = `

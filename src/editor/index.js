@@ -5,7 +5,7 @@ import textInsert from './helpers/insertText'
 import keydownListen from './helpers/keydownListen'
 import 'highlight.js/styles/tomorrow.css'
 import './fonts/iconfont.css'
-import { convertMarkdownToHtml } from '../tools/articleTools';
+import { mdToHtml } from '../tools/articleTools';
 
 class MdEditor extends React.Component {
     constructor(props) {
@@ -279,7 +279,7 @@ class MdEditor extends React.Component {
                     <div className={previewClass}>
                         <div
                             className="for-preview for-markdown-preview"
-                            dangerouslySetInnerHTML={{ __html: convertMarkdownToHtml(value, this.props.topValue, this.props.bottomValue) }}
+                            dangerouslySetInnerHTML={{ __html: mdToHtml(this.props.topValue + '\n\n' + value + '\n\n' + this.props.bottomValue) }}
                         />
                     </div>
                 </div>

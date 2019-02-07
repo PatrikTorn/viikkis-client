@@ -2,6 +2,7 @@ import {createActionPointers} from '../tools/actionTools';
 import {API_ENDPOINT} from '../constants';
 import axios from 'axios'
 import {_PASSWORD, _EMAIL} from '../secret';
+import * as httpService from '../services/httpService';
 export const types = createActionPointers([
     `SET_STATE`,
     'GET_ARTICLES',
@@ -9,11 +10,11 @@ export const types = createActionPointers([
     'CREATE_WEEK',
     'GET_ARTICLE',
     'DELETE_ARTICLE',
-    'GET_SUMMARY',
     'LOGIN',
     'LOGOUT',
     'GET_TEXT',
-    'GET_WEEK_ARTICLES'
+    'GET_WEEK_ARTICLES',
+    'GET_WEEK_CONFIG'
 ]);
 
 export const setState = (payload) => ({
@@ -23,45 +24,57 @@ export const setState = (payload) => ({
 
 export const getArticles = () => ({
     type:types.GET_ARTICLES.NAME,
-    payload:axios.get(`${API_ENDPOINT}/articles`)
+    payload:httpService.getArticles()
 });
+
+export const getWeek = ({year, week}) => dispatch => {
+    dispatch(getWeekArticles({year, week}));
+    dispatch(getWeekConfig({year, week}));
+}
 
 export const getWeekArticles = ({year, week}) => ({
     type:types.GET_WEEK_ARTICLES.NAME,
-    payload:axios.get(`${API_ENDPOINT}/articles?year=${year}&week=${week}`)
+    payload:httpService.getWeekArticles({year, week})
+});
+
+export const getWeekConfig = ({year, week}) => ({
+    type:types.GET_WEEK_CONFIG.NAME,
+    payload:httpService.getWeekConfig({year, week})
 });
 
 export const getArticle = (id) => ({
     type:types.GET_ARTICLE.NAME,
-    payload:axios.get(`${API_ENDPOINT}/articles/${id}`)
-});
-
-export const getSummary = ({year, week}) => ({
-    type:types.GET_SUMMARY.NAME,
-    payload:axios.get(`${API_ENDPOINT}/articles?year=${year}&week=${week}`)
+    payload:httpService.getArticle(id)
 });
 
 export const deleteArticle = (id) => ({
     type:types.DELETE_ARTICLE.NAME,
-    payload:axios.delete(`${API_ENDPOINT}/articles/${id}`)
+    payload:httpService.deleteArticle(id)
 });
 
 export const updateArticle = ({id, text}) => ({
     type:types.UPDATE_ARTICLE.NAME,
-    payload:axios.put(`${API_ENDPOINT}/articles/${id}`, JSON.stringify({text}))
+    payload:httpService.updateArticle({id, text})
 });
 
-export const createWeek = (articles) => ({
-    type:types.CREATE_WEEK.NAME,
-    payload:axios.all(articles.map(async a => {
-        const res = await axios.post(`${API_ENDPOINT}/articles`, JSON.stringify(a));
-        return {...a, id:res.data, edited_at:'0000-00-00 00:00:00', created_at:new Date().toISOString()};
-    }))
-});
+export const createWeek = ({config, articles}) => async dispatch => {
+    dispatch({type:types.CREATE_WEEK.PENDING})
+    try {
+        const response = await httpService.createWeek(config);
+        const week_id = response.data;
+        articles = articles.map(a => ({...a, week_id}));
+        const payload = await httpService.createArticles(articles);
+        dispatch({
+            type:types.CREATE_WEEK.FULFILLED,
+            payload
+        });
+    } catch (e) {
+        dispatch({type:types.CREATE_WEEK.REJECTED})
+    }
+};
 
 export const login = ({email, password}) => ({
     type:types.LOGIN.NAME,
-    // payload:axios.post(`https://indecs.fi/viikkis/login.php`, JSON.stringify({email, password})),
     payload:async () => {
         if(email === _EMAIL && password === _PASSWORD){
             return {email, password}

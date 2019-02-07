@@ -1,12 +1,28 @@
 import React, { Component } from 'react';
 import { Badge, Button, ListGroup, ListGroupItem } from 'reactstrap';
-import { Connect } from '../actions';
 import CreateWeek from './CreateWeek';
 import { formatTitle, lastEdited } from '../tools/articleTools';
+import { connector, actions } from '../actions';
+
+const connect = connector(
+    state => ({
+        articles:state.app.articles.sort((a, b) => a.position - b.position),
+        socket:state.socket,
+        rooms:state.app.rooms,
+        year:state.config.year,
+        week:state.config.week
+    }), 
+    {
+        deleteArticle:actions.app.deleteArticle,
+        setConfigState:actions.config.setConfigState,
+        navigate:actions.config.navigate
+    }
+);
+
 class WeekList extends Component {
 
     socketsOnline(id) {
-        const { rooms } = this.props.app;
+        const { rooms } = this.props;
         const sockets = rooms[id] ? rooms[id].sockets : [];
         return sockets.length > 0;
     }
@@ -18,12 +34,11 @@ class WeekList extends Component {
         }
     }
 
-
     render() {
-        const articles = this.props.app.articles.sort((a, b) => a.position - b.position)
+        const {articles} = this.props;
 
         return articles.length === 0 ? (
-            <CreateWeek year={this.props.year} week={this.props.week} />
+            <CreateWeek />
         ) : (
                 <React.Fragment>
                     <Button block color="success" onClick={() => this.props.navigate('SUMMARY')}>Näytä kooste viikkotiedotteesta</Button>
@@ -52,4 +67,4 @@ class WeekList extends Component {
     }
 }
 
-export default Connect(WeekList)
+export default connect(WeekList)

@@ -1,6 +1,6 @@
 import moment from 'moment';
 import { createActionPointers } from '../tools/actionTools';
-import { getWeekArticles } from './appActions';
+import { getWeek } from './appActions';
 
 export const types = createActionPointers([
     `SET_CONFIG_STATE`,
@@ -33,7 +33,7 @@ export const setNextWeek = () => (dispatch, getState) => {
         week,
         year
     }));
-    return dispatch(getWeekArticles({week, year}));
+    return dispatch(getWeek({week, year}));
 }
 
 
@@ -46,5 +46,5 @@ export const setPrevWeek = () => (dispatch, getState) => {
         week,
         year
     }));
-    return dispatch(getWeekArticles({week, year}));
+    return dispatch(getWeek({week, year}));
 }

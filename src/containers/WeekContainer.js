@@ -1,9 +1,24 @@
 import moment from 'moment';
 import React, { Component } from 'react';
 import { toast } from 'react-toastify';
-import { Connect } from '../actions';
-import Week from './WeekList';
+import WeekList from './WeekList';
 import  {Button} from 'reactstrap'
+import {connector, actions} from '../actions';
+
+const connect = connector(
+    state => ({
+        year:state.config.year,
+        week:state.config.week,
+        now:state.config.now,
+        socket:state.socket
+    }), 
+    {
+        getWeek:actions.app.getWeek,
+        setPrevWeek:actions.config.setPrevWeek,
+        setNextWeek:actions.config.setNextWeek
+    }
+);
+
 class WeekContainer extends Component {
 
     state = {
@@ -17,7 +32,7 @@ class WeekContainer extends Component {
 
     async init() {
         try {
-            await this.props.getWeekArticles({ year: this.props.config.year, week: this.props.config.week })
+            await this.props.getWeek({ year: this.props.year, week: this.props.week })
             this.setState({ failed: false, loaded: true })
         } catch (e) {
             toast.error('Ei internet yhteyttä palvelimeen');
@@ -26,7 +41,7 @@ class WeekContainer extends Component {
     }
 
     render() {
-        const { year, week, now } = this.props.config;
+        const { year, week, now } = this.props;
         const startOfWeek = moment(now).startOf('isoWeek');
         const endOfWeek = moment(now).endOf('isoWeek');
         const { loaded, failed } = this.state;
@@ -44,14 +59,14 @@ class WeekContainer extends Component {
                             <h1><i className="fa fa-angle-right"></i></h1>
                     </Button>
                 </div>
-                {loaded && !failed && <Week week={week} year={year} />}
+                {loaded && !failed && <WeekList />}
             </div>
 
         )
     }
 }
 
-export default Connect(WeekContainer)
+export default connect(WeekContainer)
 
 const styles = {
     wrapper: {

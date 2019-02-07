@@ -1,4 +1,21 @@
-import marked from '../editor/helpers/marked'
+import md2html from '../editor/helpers/md2html'
+import md2mjml from '../editor/helpers/md2mjml'
+
+const config = {
+    otsikon_ylle:"Tuotantotalouden kilta Indecs",
+    otsikon_alle:"Viikko 1",
+    sposti_aihe: "Indecsin Viikkotiedote 1 — Indecs' Newsletter 1",
+    url: "https://www.indecs.fi",
+    nimi: "Leevi Törnblom",
+    titteli: "Sihteeri / Secretary",
+    kilta: "Tuotantotalouden kilta Indecs Ry",
+    guild: "Guild of Industrial Engineering and Management Indecs",
+    yliopisto: "Tampereen teknillinen yliopisto",
+    university: "Tampere University of Technology",
+    puhelin: "0408431989",
+    sposti: "sihteeri@indecs.fi",
+    internet: "www.indecs.fi"
+}
 
 export const formatTitle = (fi, en) => {
     return en ? `${fi} - ${en}` :  `${fi}`
@@ -56,25 +73,30 @@ export const lastEdited = (editedAt) => {
         ) + templates.suffix;
 }
 
-
-const massReplace = (text, replacementArray) => {
-    let results = text;
-    for (let [regex, replacement] of replacementArray) {
-      results = results.replace(regex, replacement);
+export const mdToHtml = (md) => {
+    if(typeof md == "array") {
+        return md2html(md.join('\n\n'));
+    } else {
+        return md2html(md)
     }
-    return results;
-  }
+} 
+export const mdToMjml = (md) => {
+    if(typeof md == "array") {
+        md = md.join('\n\n');
+    }
+    return md2mjml(md
+        .split('\n')
+        .reduce((acc, str) => {
+            ["#","##","###"].map(i => {
+                if(str.substr(0,i.length) === i && str.charAt(i.length) !== '#')
+                str = [str.slice(0, i.length), " ", str.slice(i.length)].join('');
+            })
 
-export const convertMarkdownToHtml = (value, topValue, bottomValue) => {
-    return marked(
-        topValue + massReplace(value,
-            [[/^###(.*)/gm, '<h3>$1</h3>'],
-            [/^##(.*)/gm, '<h2>$1</h2>'],
-            [/^#(.*)/gm, '<h1>$1</h1>'],
-            [/\?\[(.+?)\]\((.*\))/g, '<button class="customButton" href="$2">$1</button>']]
-        ) + bottomValue
-    )
+            return acc + str + '\n';   
+        }, '')
+    );
 }
+
 
 export const createMarkdownTOC = (value) => {
     let _1 = 0;
@@ -107,4 +129,108 @@ export const createMarkdownTOC = (value) => {
             }
             else return acc
         }, [])
+}
+
+export const createMjml = (content, config = config) => {
+if(typeof content == "array") {
+    content = content.join('\n\n');
+}
+return `
+<mjml>
+    <mj-head>
+        <mj-title>${config.sposti_aihe}</mj-title>
+        <mj-style inline="inline">
+        p       {{ font-size: 16px; margin: 10px 0px}}
+        h1      {{ font-size: 25px; font-weight:900; }}
+        h2      {{ font-size: 23px; font-weight:400}}
+        h3      {{ font-size: 21px; font-weight:400}}
+        tr th   {{ border-bottom:1px solid #ecedee;text-align:left }}
+        ul,ol   {{ margin: 10px 0px }}
+        ul ul, ol ol, ol ul, ul ol   {{ margin: 0px 0px }}
+
+        </mj-style>
+        <mj-font name="Source Sans Pro" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,200i,300,300i,400,400i,600,600i,700,700i,900,900i"></mj-font>
+        <mj-attributes>
+            <mj-body background-color="#eeeeee"></mj-body>
+            <mj-all font-family="Source Sans Pro, Helvetica, Arial, sans-serif"></mj-all>
+            <mj-text font-size="16px" font-weight="400" color="#2e3131" padding="0px 25px" line-height="24px"></mj-text>
+
+            <mj-class name="paragraph" padding="0px 25px"/>
+            <mj-class name="heading1"  padding-top="10px" padding-bottom="0px" padding-left="25px" padding-right="25px" color="#2e3131" text-transform="uppercase" />
+            <mj-class name="heading2" line-height="22px" padding-top="27px" padding-bottom="0px" padding-left="25px" padding-right="25px" color="#C01F29" />
+            <mj-class name="heading3"  padding-top="0px" padding-bottom="0px" padding-left="25px" padding-right="25px" color="#C01F29" />
+
+            <mj-button align="left" background-color="#C01F29" color="white" padding-bottom="25px" font-weight="900" inner-padding="10px 18px" text-transform="uppercase" />
+            <mj-table></mj-table>
+            <mj-divider padding-bottom="50px" padding-top="50px" border-width="2px" border-style="dashed" border-color="silver" /> 
+            <mj-section background-color="white"></mj-section>
+            <mj-column></mj-column>
+            <mj-text></mj-text>
+
+            <mj-accordion border="none" padding="1px" />
+            <mj-accordion-element icon-wrapped-url="http://i.imgur.com/Xvw0vjq.png" icon-unwrapped-url="http://i.imgur.com/KKHenWa.png" icon-height="24px" icon-width="24px" />
+            <mj-accordion-title font-family="Roboto, Open Sans, Helvetica, Arial, sans-serif" background-color="#fff" color="#031017" padding="15px" font-size="18px" />
+            <mj-accordion-text font-family="Open Sans, Helvetica, Arial, sans-serif" background-color="#fafafa" padding="15px" color="#505050" font-size="14px" />
+
+      </mj-attributes>
+    </mj-head>
+    <mj-body>
+        <mj-section>
+            <mj-column>
+                <mj-image width="200px" padding-top="100px" src="https://indecs.fi/indecs-fi/wp-content/uploads/2019/01/Indecs_logo_teksti.png" /> 
+                <mj-text font-size="22px" font-weight="300" padding-top="50px" padding-bottom="2px" color="black" align="center">${config.otsikon_ylle}</mj-text>
+                <mj-text font-size="40px" font-weight="900" font-style="italic" text-transform="uppercase" line-height="40px" padding-top="0px" padding-bottom="2px" color="#C01F29" align="center">Viikkotiedote</mj-text>
+                <mj-text font-size="22px" font-weight="700" padding-top="0px" text-transform="uppercase" padding-bottom="80px" color="#2e3131" align="center">${config.otsikon_alle}</mj-text>
+            </mj-column>
+        </mj-section>
+
+        <mj-section padding="20px" background-color="#ffffff">
+            <mj-column background-color="#dededd">
+                <mj-accordion>
+                    <mj-accordion-element>
+                    <mj-accordion-title>Why use an accordion?</mj-accordion-title>
+                    <mj-accordion-text>
+                        <span style="line-height:20px">
+                        Because emails with a lot of content are most of the time a very bad experience on mobile, mj-accordion comes handy when you want to deliver a lot of information in a concise way.
+                        </span>
+                    </mj-accordion-text>
+                    </mj-accordion-element>
+                    <mj-accordion-element>
+                    <mj-accordion-title>How it works</mj-accordion-title>
+                    <mj-accordion-text>
+                        <span style="line-height:20px">
+                        Content is stacked into tabs and users can expand them at will. If responsive styles are not supported (mostly on desktop clients), tabs are then expanded and your content is readable at once.
+                        </span>
+                    </mj-accordion-text>
+                    </mj-accordion-element>
+                </mj-accordion>
+            </mj-column>
+        </mj-section>
+
+        <mj-section>
+            <mj-column>
+                ${mdToMjml(content)}
+            </mj-column>
+        </mj-section>
+
+        <mj-section>
+            <mj-column padding-bottom="120px">
+                <mj-divider padding-top="70px" padding-bottom="120px" border-width="2px" border-style="dashed" border-color="silver" /> 
+                <mj-text font-size="20px" font-weight="300" padding-top="35px" padding-bottom="10px" color="black" align="center">Terveisin - Regards,</mj-text>
+                <mj-text font-size="35px" font-weight="800" text-transform="uppercase" font-style="italic" line-height="35px" padding-top="0px" padding-bottom="10px" color="#C01F29" align="center">${config.nimi}</mj-text>
+                <mj-text font-size="20px" font-weight="800" text-transform="uppercase" padding-top="0px" padding-bottom="10px" color="#2e3131" align="center">${config.titteli}</mj-text>
+                <mj-text font-size="16px" font-weight="300" color="#2e3131" align="center">
+                    ${config.kilta}<br>
+                    ${config.guild}<br>
+                    ${config.yliopisto}<br>
+                    ${config.university}<br>
+                    ${config.puhelin}<br>
+                    <a href="mailto:${config.sposti}">${config.sposti}</a><br>
+                    <a href="${config.url}">${config.kilta}</a>
+                </mj-text>
+            </mj-column>
+        </mj-section>
+    </mj-body>
+</mjml>
+`;
 }
