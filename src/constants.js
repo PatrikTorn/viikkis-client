@@ -1,4 +1,5 @@
 export const API_ENDPOINT = 'http://viikkis.indecs.fi/api.php';
+export const AUTH_ENDPOINT = 'http://viikkis.indecs.fi/login.php';
 // export const SOCKET_ENDPOINT = 'http://viikkis.herokuapp.com';
 export const SOCKET_ENDPOINT = 'http://localhost:5000';
 

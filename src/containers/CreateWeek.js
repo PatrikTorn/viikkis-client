@@ -11,9 +11,9 @@ const connect = connector(
         year:state.config.year,
         week:state.config.week
     }), 
-    {
+    actions => ({
         createWeek:actions.app.createWeek
-    }
+    })
 );
 
 class CreateWeek extends Component {
@@ -33,7 +33,7 @@ class CreateWeek extends Component {
             number:this.props.week-1,
             guild:'Tuotantotalouden kilta Indecs',
             guild_en: 'Guild of Industrial Engineering and Management Indecs',
-            subject:"Indecsin Viikkotiedote 1 — Indecs' Newsletter 1",
+            subject: `Indecsin Viikkotiedote ${this.props.week-1} — Indecs' Newsletter ${this.props.week}`,
             url: 'www.indecs.fi',
             name:'Leevi Törnblom',
             job: 'Sihteeri',
@@ -74,6 +74,7 @@ class CreateWeek extends Component {
     }
 
     changeConfig(e) {
+        e.preventDefault();
         this.setState({
             config:{...this.state.config, [e.target.name]:e.target.value}
         });

@@ -1,7 +1,4 @@
 import {createActionPointers} from '../tools/actionTools';
-import {API_ENDPOINT} from '../constants';
-import axios from 'axios'
-import {_PASSWORD, _EMAIL} from '../secret';
 import * as httpService from '../services/httpService';
 export const types = createActionPointers([
     `SET_STATE`,
@@ -75,13 +72,7 @@ export const createWeek = ({config, articles}) => async dispatch => {
 
 export const login = ({email, password}) => ({
     type:types.LOGIN.NAME,
-    payload:async () => {
-        if(email === _EMAIL && password === _PASSWORD){
-            return {email, password}
-        }else {
-            throw new Error('wrong password');
-        }
-    }
+    payload:httpService.login({email, password})
 })
 
 export const logout = () => ({

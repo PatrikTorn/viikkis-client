@@ -3,7 +3,7 @@ import md2mjml from '../editor/helpers/md2mjml'
 
 const config = {
     otsikon_ylle:"Tuotantotalouden kilta Indecs",
-    otsikon_alle:"Viikko 1",
+    otsikon_alle:"Numero 1 — Viikko 1",
     sposti_aihe: "Indecsin Viikkotiedote 1 — Indecs' Newsletter 1",
     url: "https://www.indecs.fi",
     nimi: "Leevi Törnblom",
@@ -74,14 +74,14 @@ export const lastEdited = (editedAt) => {
 }
 
 export const mdToHtml = (md) => {
-    if(typeof md == "array") {
+    if(typeof md == "object") {
         return md2html(md.join('\n\n'));
     } else {
         return md2html(md)
     }
 } 
 export const mdToMjml = (md) => {
-    if(typeof md == "array") {
+    if(typeof md === "object") {
         md = md.join('\n\n');
     }
     return md2mjml(md
@@ -131,7 +131,7 @@ export const createMarkdownTOC = (value) => {
         }, [])
 }
 
-export const createMjml = (content, config = config) => {
+export const createMjml = (content, conf) => {
 if(typeof content == "array") {
     content = content.join('\n\n');
 }
@@ -181,29 +181,6 @@ return `
                 <mj-text font-size="22px" font-weight="300" padding-top="50px" padding-bottom="2px" color="black" align="center">${config.otsikon_ylle}</mj-text>
                 <mj-text font-size="40px" font-weight="900" font-style="italic" text-transform="uppercase" line-height="40px" padding-top="0px" padding-bottom="2px" color="#C01F29" align="center">Viikkotiedote</mj-text>
                 <mj-text font-size="22px" font-weight="700" padding-top="0px" text-transform="uppercase" padding-bottom="80px" color="#2e3131" align="center">${config.otsikon_alle}</mj-text>
-            </mj-column>
-        </mj-section>
-
-        <mj-section padding="20px" background-color="#ffffff">
-            <mj-column background-color="#dededd">
-                <mj-accordion>
-                    <mj-accordion-element>
-                    <mj-accordion-title>Why use an accordion?</mj-accordion-title>
-                    <mj-accordion-text>
-                        <span style="line-height:20px">
-                        Because emails with a lot of content are most of the time a very bad experience on mobile, mj-accordion comes handy when you want to deliver a lot of information in a concise way.
-                        </span>
-                    </mj-accordion-text>
-                    </mj-accordion-element>
-                    <mj-accordion-element>
-                    <mj-accordion-title>How it works</mj-accordion-title>
-                    <mj-accordion-text>
-                        <span style="line-height:20px">
-                        Content is stacked into tabs and users can expand them at will. If responsive styles are not supported (mostly on desktop clients), tabs are then expanded and your content is readable at once.
-                        </span>
-                    </mj-accordion-text>
-                    </mj-accordion-element>
-                </mj-accordion>
             </mj-column>
         </mj-section>
 

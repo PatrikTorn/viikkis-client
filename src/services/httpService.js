@@ -1,5 +1,5 @@
 import {Method, request} from '../tools/httpTools';
-import {API_ENDPOINT, SOCKET_ENDPOINT} from '../constants';
+import {API_ENDPOINT, SOCKET_ENDPOINT, AUTH_ENDPOINT} from '../constants';
 import axios from 'axios';
 
 export const getArticles = () => request(Method.GET, `${API_ENDPOINT}/articles`)
@@ -11,6 +11,8 @@ export const getWeekConfig = ({week, year}) => request(Method.GET, `${API_ENDPOI
 export const getArticle = (id) => request(Method.GET, `${API_ENDPOINT}/articles/${id}`)
 
 export const deleteArticle = (id) => request(Method.DELETE, `${API_ENDPOINT}/articles/${id}`)
+
+export const login = ({email, password}) => request(Method.POST, `${AUTH_ENDPOINT}`, JSON.stringify({email, password}))
 
 export const updateArticle = ({id, text}) => request(Method.PUT, `${API_ENDPOINT}/articles/${id}`, JSON.stringify({text}))
 

@@ -72,7 +72,7 @@ const appReducer = (state = initialState, { payload, type }) => {
             return { ...state, config: payload.data.length > 0 ? payload.data[0] : initialState.config, loading: false }
 
         case types.LOGIN.FULFILLED:
-            return { ...state, user: payload, logged: true, loading: false }
+            return { ...state, user: payload.data, logged: true, loading: false }
 
 
         case types.LOGOUT.NAME:

@@ -10,20 +10,19 @@ export const actions = {
     locale:localeActions
 };
 
-export const connector = (state, acts) => connect(
-    state,
-    dispatch => bindActionCreators({
-        ...acts
-    }, dispatch)
-)
+export const connector = (state, acts) => {
+    return connect(
+        state,
+        dispatch => () => bindActionCreators({
+            ...acts
+        }, dispatch)
+    );
+}
 
-export const mdp = (dispatch) => (bindActionCreators({
-    ...appActions,
-    ...configActions,
-    ...localeActions
-  }, dispatch));
 
-  
-export const msp = (state, props) => state
-
-export const Connect = connect(msp, mdp);
+function from(a) {
+    return function(actions = actions){
+        console.log(a);
+        console.log(actions);
+    }
+}

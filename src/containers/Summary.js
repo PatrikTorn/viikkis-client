@@ -4,7 +4,7 @@ import Editor from '../editor';
 import { createMarkdownTOC, mdToHtml } from '../tools/articleTools';
 import { MD_CONFIG, MD_CONFIG_TOC, SUMMARY_BOTTOM, SUMMARY_TOP } from '../constants';
 import {connector, actions} from '../actions';
-import {mjml2html, sendEmail} from '../services/httpService';
+import {mjml2html} from '../services/httpService';
 import {createMjml} from '../tools/articleTools';
 import {toast} from 'react-toastify';
 
@@ -59,13 +59,14 @@ class Summary extends Component {
         .catch(e => toast.error('virhe'))
     }
 
-    sendEmail(){
-        const tableOfContents = createMarkdownTOC(this.props.summary);
-        const mjml = createMjml([tableOfContents, this.props.summary]);
-        sendEmail(mjml)
-        .then(() => toast.success("Sähköposti lähetetty"))
-        .catch(e => toast.error("Ongelma sähköpostin lähetyksessä"))
-    }
+    // sendEmail(){
+    //     // NOT IN USE
+    //     const tableOfContents = createMarkdownTOC(this.props.summary);
+    //     const mjml = createMjml([tableOfContents, this.props.summary]);
+    //     sendEmail(mjml)
+    //     .then(() => toast.success("Sähköposti lähetetty"))
+    //     .catch(e => toast.error("Ongelma sähköpostin lähetyksessä"))
+    // }
 
     exportMd() {
         let content = (this.state.config + this.state.toc + this.props.summary).replace(/\n/g, "\r\n");
@@ -104,7 +105,6 @@ class Summary extends Component {
                             <Button color="success" onClick={() => this.exportMd()}>Lataa md</Button>
                             <Button color="primary" onClick={() => this.exportHtml()}>Lataa html</Button>
                             <Button color="secondary" onClick={() => this.exportMjml()}>Lataa mjml</Button>
-                            <Button color="warning" onClick={() => this.sendEmail()}>Lähetä sposti</Button>
                         </ButtonGroup>
                     </ModalFooter>
                 </Modal>
