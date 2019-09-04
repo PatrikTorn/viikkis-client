@@ -1,144 +1,149 @@
-import md2html from '../editor/helpers/md2html'
-import md2mjml from '../editor/helpers/md2mjml'
+import md2html from "../editor/helpers/md2html";
+import md2mjml from "../editor/helpers/md2mjml";
 
 const config = {
-    otsikon_ylle:"Tuotantotalouden kilta Indecs",
-    otsikon_alle:"Numero 1 — Viikko 1",
-    sposti_aihe: "Indecsin Viikkotiedote 1 — Indecs' Newsletter 1",
-    url: "https://www.indecs.fi",
-    nimi: "Leevi Törnblom",
-    titteli: "Sihteeri / Secretary",
-    kilta: "Tuotantotalouden kilta Indecs Ry",
-    guild: "Guild of Industrial Engineering and Management Indecs",
-    yliopisto: "Tampereen teknillinen yliopisto",
-    university: "Tampere University of Technology",
-    puhelin: "0408431989",
-    sposti: "sihteeri@indecs.fi",
-    internet: "www.indecs.fi"
-}
+  otsikon_ylle: "Tuotantotalouden kilta Indecs",
+  otsikon_alle: "Numero 1 — Viikko 1",
+  sposti_aihe: "Indecsin Viikkotiedote 1 — Indecs' Newsletter 1",
+  url: "https://www.indecs.fi",
+  nimi: "Leevi Törnblom",
+  titteli: "Sihteeri / Secretary",
+  kilta: "Tuotantotalouden kilta Indecs Ry",
+  guild: "Guild of Industrial Engineering and Management Indecs",
+  yliopisto: "Tampereen teknillinen yliopisto",
+  university: "Tampere University of Technology",
+  puhelin: "0408431989",
+  sposti: "sihteeri@indecs.fi",
+  internet: "www.indecs.fi"
+};
 
 export const formatTitle = (fi, en) => {
-    return en ? `${fi} - ${en}` :  `${fi}`
-}
+  return en ? `${fi} - ${en}` : `${fi}`;
+};
 
-export const lastEdited = (editedAt) => {
-    let templates = {
-        prefix: "",
-        suffix: " sitten",
-        seconds: "alle minuutti",
-        minute: "noin minuutti",
-        minutes: "%d minuuttia",
-        hour: "noin tunti",
-        hours: "noin %d tuntia",
-        day: "päivä",
-        days: "%d päivää",
-        month: "noin kuukausi",
-        months: "%d kuukautta",
-        year: "noin vuosi",
-        years: "%d vuotta"
-    };
+export const lastEdited = editedAt => {
+  let templates = {
+    prefix: "",
+    suffix: " sitten",
+    seconds: "alle minuutti",
+    minute: "noin minuutti",
+    minutes: "%d minuuttia",
+    hour: "noin tunti",
+    hours: "noin %d tuntia",
+    day: "päivä",
+    days: "%d päivää",
+    month: "noin kuukausi",
+    months: "%d kuukautta",
+    year: "noin vuosi",
+    years: "%d vuotta"
+  };
 
-    let time = editedAt;
+  let time = editedAt;
 
-    let template = function(t, n) {
-        return templates[t] && templates[t].replace(/%d/i, Math.abs(Math.round(n)));
-    };
+  let template = function(t, n) {
+    return templates[t] && templates[t].replace(/%d/i, Math.abs(Math.round(n)));
+  };
 
-        if (time === '0000-00-00 00:00:00') return 'Ei muokattu';
-        time = time.replace(/\.\d+/, ""); // remove milliseconds
-        time = time.replace(/-/, "/").replace(/-/, "/");
-        time = time.replace(/T/, " ").replace(/Z/, " UTC");
-        time = time.replace(/([\+\-]\d\d)\:?(\d\d)/, " $1$2"); // -04:00 -> -0400
-        time = new Date(time * 1000 || time);
+  if (time === "0000-00-00 00:00:00") return "Ei muokattu";
+  time = time.replace(/\.\d+/, ""); // remove milliseconds
+  time = time.replace(/-/, "/").replace(/-/, "/");
+  time = time.replace(/T/, " ").replace(/Z/, " UTC");
+  time = time.replace(/([\+\-]\d\d)\:?(\d\d)/, " $1$2"); // -04:00 -> -0400
+  time = new Date(time * 1000 || time);
 
-        let now = new Date();
-        let seconds = ((now.getTime() - time) * .001) >> 0;
-        let minutes = seconds / 60;
-        let hours = minutes / 60;
-        let days = hours / 24;
-        let years = days / 365;
+  let now = new Date();
+  let seconds = ((now.getTime() - time) * 0.001) >> 0;
+  let minutes = seconds / 60;
+  let hours = minutes / 60;
+  let days = hours / 24;
+  let years = days / 365;
 
-        return 'muokattu ' + templates.prefix + (
-            (seconds < 45 && template('seconds', seconds)) ||
-            (seconds < 90 && template('minute', 1)) ||
-            (minutes < 45 && template('minutes', minutes)) ||
-            (minutes < 90 && template('hour', 1)) ||
-            (hours < 24 && template('hours', hours)) ||
-            (hours < 42 && template('day', 1)) ||
-            (days < 30 && template('days', days)) ||
-            (days < 45 && template('month', 1)) ||
-            (days < 365 && template('months', days / 30)) ||
-            (years < 1.5 && template('year', 1)) ||
-            template('years', years)
-        ) + templates.suffix;
-}
+  return (
+    "muokattu " +
+    templates.prefix +
+    ((seconds < 45 && template("seconds", seconds)) ||
+      (seconds < 90 && template("minute", 1)) ||
+      (minutes < 45 && template("minutes", minutes)) ||
+      (minutes < 90 && template("hour", 1)) ||
+      (hours < 24 && template("hours", hours)) ||
+      (hours < 42 && template("day", 1)) ||
+      (days < 30 && template("days", days)) ||
+      (days < 45 && template("month", 1)) ||
+      (days < 365 && template("months", days / 30)) ||
+      (years < 1.5 && template("year", 1)) ||
+      template("years", years)) +
+    templates.suffix
+  );
+};
 
-export const mdToHtml = (md) => {
-    if(typeof md == "object") {
-        return md2html(md.join('\n\n'));
-    } else {
-        return md2html(md)
-    }
-} 
-export const mdToMjml = (md) => {
-    if(typeof md === "object") {
-        md = md.join('\n\n');
-    }
-    return md2mjml(md
-        .split('\n')
-        .reduce((acc, str) => {
-            ["#","##","###"].map(i => {
-                if(str.substr(0,i.length) === i && str.charAt(i.length) !== '#')
-                str = [str.slice(0, i.length), " ", str.slice(i.length)].join('');
-            })
+export const mdToHtml = md => {
+  if (typeof md == "object") {
+    return md2html(md.join("\n\n"));
+  } else {
+    return md2html(md);
+  }
+};
+export const mdToMjml = md => {
+  if (typeof md === "object") {
+    md = md.join("\n\n");
+  }
+  return md2mjml(
+    md.split("\n").reduce((acc, str) => {
+      ["#", "##", "###"].map(i => {
+        if (str.substr(0, i.length) === i && str.charAt(i.length) !== "#")
+          str = [str.slice(0, i.length), " ", str.slice(i.length)].join("");
+      });
 
-            return acc + str + '\n';   
-        }, '')
-    );
-}
+      return acc + str + "\n";
+    }, "")
+  );
+};
 
+export const createMarkdownTOC = value => {
+  let _1 = 0;
+  let _2 = 0;
+  let _3 = 0;
+  return value
+    .replace("\n\n", "\n")
+    .split("\n")
+    .map(i => i.trim())
+    .filter(i => i.length > 0)
+    .reduce((acc, str) => {
+      if (str.substring(0, 3) === "###") {
+        _3 = _3 + 1;
+        return (
+          acc +
+          `    - [${_1}.${_2}.${_3}. ${str.replace(
+            "###",
+            ""
+          )}](javascript:void(0);)\n`
+        );
+      } else if (str.substring(0, 2) === "##") {
+        _3 = 0;
+        _2 = _2 + 1;
+        return (
+          acc +
+          `  - [${_1}.${_2}. ${str.replace("##", "")}](javascript:void(0);)\n`
+        );
+      } else if (str.substring(0, 1) === "#") {
+        _3 = 0;
+        _2 = 0;
+        _1 = _1 + 1;
+        return (
+          acc + `- [${_1}. ${str.replace("#", "")}](javascript:void(0);)\n`
+        );
+      } else return acc;
+    }, []);
+};
 
-export const createMarkdownTOC = (value) => {
-    let _1 = 0;
-    let _2 = 0;
-    let _3 = 0;
-    return value
-        .replace('\n\n', '\n')
-        .split('\n')
-        .map(i => i.trim())
-        .filter(i => i.length > 0)
-        .reduce((acc, str) => {
-
-            if (str.substring(0, 3) === "###") {
-                _3 = _3 + 1;
-                return acc + `    - [${_1}.${_2}.${_3}. ${str.replace('###', '')}](javascript:void(0);)\n`
-            }
-
-            else if (str.substring(0, 2) === "##") {
-                _3 = 0;
-                _2 = _2 + 1;
-                return acc + `  - [${_1}.${_2}. ${str.replace('##', '')}](javascript:void(0);)\n`
-
-            }
-
-            else if (str.substring(0, 1) === "#") {
-                _3 = 0;
-                _2 = 0;
-                _1 = _1 + 1;
-                return acc + `- [${_1}. ${str.replace('#', '')}](javascript:void(0);)\n`
-            }
-            else return acc
-        }, [])
-}
-
-export const createMjml = (content, conf) => {
-if(typeof content == "array") {
-    content = content.join('\n\n');
-}
-return `
+export const createMjml = (content, config, week, number) => {
+  if (typeof content == "array") {
+    content = content.join("\n\n");
+  }
+  return `
 <mjml>
     <mj-head>
-        <mj-title>${config.sposti_aihe}</mj-title>
+        <mj-title>Indecsin Viikkotiedote ${number} — Indecs' Newsletter ${number}</mj-title>
         <mj-style inline="inline">
         p       {{ font-size: 16px; margin: 10px 0px}}
         h1      {{ font-size: 25px; font-weight:900; }}
@@ -178,9 +183,11 @@ return `
         <mj-section>
             <mj-column>
                 <mj-image width="200px" padding-top="100px" src="https://indecs.fi/indecs-fi/wp-content/uploads/2019/01/Indecs_logo_teksti.png" /> 
-                <mj-text font-size="22px" font-weight="300" padding-top="50px" padding-bottom="2px" color="black" align="center">${config.otsikon_ylle}</mj-text>
+                <mj-text font-size="22px" font-weight="300" padding-top="50px" padding-bottom="2px" color="black" align="center">${
+                  config.guild
+                }</mj-text>
                 <mj-text font-size="40px" font-weight="900" font-style="italic" text-transform="uppercase" line-height="40px" padding-top="0px" padding-bottom="2px" color="#C01F29" align="center">Viikkotiedote</mj-text>
-                <mj-text font-size="22px" font-weight="700" padding-top="0px" text-transform="uppercase" padding-bottom="80px" color="#2e3131" align="center">${config.otsikon_alle}</mj-text>
+                <mj-text font-size="22px" font-weight="700" padding-top="0px" text-transform="uppercase" padding-bottom="80px" color="#2e3131" align="center">Numero ${number} — Viikko ${week}</mj-text>
             </mj-column>
         </mj-section>
 
@@ -194,20 +201,24 @@ return `
             <mj-column padding-bottom="120px">
                 <mj-divider padding-top="70px" padding-bottom="120px" border-width="2px" border-style="dashed" border-color="silver" /> 
                 <mj-text font-size="20px" font-weight="300" padding-top="35px" padding-bottom="10px" color="black" align="center">Terveisin - Regards,</mj-text>
-                <mj-text font-size="35px" font-weight="800" text-transform="uppercase" font-style="italic" line-height="35px" padding-top="0px" padding-bottom="10px" color="#C01F29" align="center">${config.nimi}</mj-text>
-                <mj-text font-size="20px" font-weight="800" text-transform="uppercase" padding-top="0px" padding-bottom="10px" color="#2e3131" align="center">${config.titteli}</mj-text>
+                <mj-text font-size="35px" font-weight="800" text-transform="uppercase" font-style="italic" line-height="35px" padding-top="0px" padding-bottom="10px" color="#C01F29" align="center">${
+                  config.name
+                }</mj-text>
+                <mj-text font-size="20px" font-weight="800" text-transform="uppercase" padding-top="0px" padding-bottom="10px" color="#2e3131" align="center">${
+                  config.job
+                } / ${config.job_en}</mj-text>
                 <mj-text font-size="16px" font-weight="300" color="#2e3131" align="center">
-                    ${config.kilta}<br>
                     ${config.guild}<br>
-                    ${config.yliopisto}<br>
+                    ${config.guild_en}<br>
                     ${config.university}<br>
-                    ${config.puhelin}<br>
-                    <a href="mailto:${config.sposti}">${config.sposti}</a><br>
-                    <a href="${config.url}">${config.kilta}</a>
+                    ${config.university_en}<br>
+                    ${config.phone}<br>
+                    <a href="mailto:${config.email}">${config.email}</a><br>
+                    <a href="${config.url}">${config.url}</a>
                 </mj-text>
             </mj-column>
         </mj-section>
     </mj-body>
 </mjml>
 `;
-}
+};

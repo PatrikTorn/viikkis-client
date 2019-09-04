@@ -15,7 +15,8 @@ const connect = connector(
     {
         getWeek:actions.app.getWeek,
         setPrevWeek:actions.config.setPrevWeek,
-        setNextWeek:actions.config.setNextWeek
+        setNextWeek:actions.config.setNextWeek,
+        getConfig: actions.config.getConfig
     }
 );
 
@@ -33,6 +34,7 @@ class WeekContainer extends Component {
     async init() {
         try {
             await this.props.getWeek({ year: this.props.year, week: this.props.week })
+            this.props.getConfig();
             this.setState({ failed: false, loaded: true })
         } catch (e) {
             toast.error('Ei internet yhteyttä palvelimeen');

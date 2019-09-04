@@ -7,6 +7,7 @@ import Header from './Header';
 import NavBar from './NavBar';
 import Summary from './Summary';
 import WeekContainer from './WeekContainer';
+import ConfigSettings from './ConfigSettings';
 
 const connect = connector(
     state => ({
@@ -22,6 +23,8 @@ class MainContainer extends React.Component {
                 return <Summary />
             case SCREENS.ARTICLE:
                 return <Article getText={this.props.getText}/>
+            case SCREENS.CONFIG_SETTINGS:
+                return <ConfigSettings/>
             default:
                 return <WeekContainer />
         }

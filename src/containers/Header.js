@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import headerImage from '../images/viikkis.png';
+import {SCREENS} from '../constants';
 import { ButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
 import { connector, actions } from '../actions';
 
@@ -10,7 +11,8 @@ const connect = connector(
         socketsLength:state.app.sockets.length
     }), 
     {
-        logout:actions.app.logout
+        logout:actions.app.logout,
+        navigate: actions.config.navigate
     }
 );
 
@@ -36,7 +38,7 @@ class Header extends Component {
                 <DropdownItem divider />
                 <DropdownItem disabled><i className="fa fa-users" style={{marginRight:5}}></i> {this.props.socketsLength} paikalla</DropdownItem>
                 <DropdownItem divider />
-                <DropdownItem disabled><i className="fa fa-cog" style={{marginRight:5}}></i> Asetukset</DropdownItem>
+                <DropdownItem onClick={() => this.props.navigate(SCREENS.CONFIG_SETTINGS)}><i className="fa fa-cog" style={{marginRight:5}}></i> Asetukset</DropdownItem>
                 <DropdownItem divider />
                 <DropdownItem onClick={() => this.logout()}><i className="fa fa-sign-out-alt" style={{marginRight:5}}></i>Kirjaudu ulos</DropdownItem>
                 </DropdownMenu>
