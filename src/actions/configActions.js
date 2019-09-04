@@ -1,6 +1,6 @@
 import moment from "moment";
 import { createActionPointers } from "../tools/actionTools";
-import { getWeek } from "./appActions";
+import { getWeekArticles } from "./appActions";
 import * as httpService from "../services/httpService";
 
 export const types = createActionPointers([
@@ -47,7 +47,7 @@ export const setNextWeek = () => (dispatch, getState) => {
       year
     })
   );
-  return dispatch(getWeek({ week, year }));
+  return dispatch(getWeekArticles({ week, year }));
 };
 
 export const setPrevWeek = () => (dispatch, getState) => {
@@ -61,5 +61,5 @@ export const setPrevWeek = () => (dispatch, getState) => {
       year
     })
   );
-  return dispatch(getWeek({ week, year }));
+  return dispatch(getWeekArticles({ week, year }));
 };

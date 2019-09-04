@@ -35,7 +35,7 @@ const connect = connector(
       .reduce((acc, a) => acc + "\n \n" + a.text, ``)
   }),
   {
-    getWeek: actions.app.getWeek,
+    getWeekArticles: actions.app.getWeekArticles,
     setPrevWeek: actions.config.setPrevWeek,
     setNextWeek: actions.config.setNextWeek
   }
@@ -48,7 +48,10 @@ class Summary extends Component {
   };
 
   componentDidMount() {
-    this.props.getWeek({ year: this.props.year, week: this.props.week });
+    this.props.getWeekArticles({
+      year: this.props.year,
+      week: this.props.week
+    });
   }
 
   toggleModal() {

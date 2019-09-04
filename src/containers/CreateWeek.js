@@ -36,9 +36,10 @@ class CreateWeek extends Component {
     const articles = this.state.articles.map((a, i) => ({
       ...a,
       position: i + 1,
-      text: a.text || `# ${formatTitle(a.title, a.title_en)} \n\n`
+      text: a.text || `# ${formatTitle(a.title, a.title_en)} \n\n`,
+      year: this.props.year,
+      week: this.props.week
     }));
-
     this.props.createWeek(articles);
   }
 
@@ -89,58 +90,6 @@ class CreateWeek extends Component {
 
   render() {
     const { articles } = this.state;
-    const ArticleForm = ({ article, i }) => {
-      return (
-        <div style={styles.box}>
-          <Button
-            style={styles.button}
-            color="danger"
-            onClick={() => this.deleteTitle(i)}
-          >
-            X
-          </Button>
-          <FormGroup key={i} row>
-            <div style={styles.index}>
-              <h2>{i + 1}.</h2>
-            </div>
-            <Label for={`fi`} sm={2}>
-              Otsikko (fi)
-            </Label>
-            <Col sm={10}>
-              <Input
-                type="text"
-                name="title"
-                required
-                placeholder="Otsikko suomeksi (pakollinen)"
-                value={article.title}
-                onChange={e => this.changeArticle(e, i)}
-              />
-            </Col>
-            <Label for={`en`} sm={2}>
-              Otsikko (en)
-            </Label>
-            <Col sm={10}>
-              <Input
-                type="text"
-                name="title_en"
-                placeholder="Otsikko englanniksi (ei pakollinen)"
-                value={article.title_en}
-                onChange={e => this.changeArticle(e, i)}
-              />
-            </Col>
-          </FormGroup>
-
-          <Input
-            style={{ height: 200 }}
-            type="textarea"
-            name="text"
-            placeholder="Teksti"
-            value={article.text}
-            onChange={e => this.changeArticle(e, i)}
-          />
-        </div>
-      );
-    };
 
     return (
       <div style={{ backgroundColor: "white", padding: 20 }}>
@@ -149,7 +98,54 @@ class CreateWeek extends Component {
         </Button>
         <Form>
           {articles.map((article, i) => (
-            <ArticleForm article={article} i={i} />
+            <div style={styles.box}>
+              <Button
+                style={styles.button}
+                color="danger"
+                onClick={() => this.deleteTitle(i)}
+              >
+                X
+              </Button>
+              <FormGroup key={i} row>
+                <div style={styles.index}>
+                  <h2>{i + 1}.</h2>
+                </div>
+                <Label for={`fi`} sm={2}>
+                  Otsikko (fi)
+                </Label>
+                <Col sm={10}>
+                  <Input
+                    type="text"
+                    name="title"
+                    required
+                    placeholder="Otsikko suomeksi (pakollinen)"
+                    value={article.title}
+                    onChange={e => this.changeArticle(e, i)}
+                  />
+                </Col>
+                <Label for={`en`} sm={2}>
+                  Otsikko (en)
+                </Label>
+                <Col sm={10}>
+                  <Input
+                    type="text"
+                    name="title_en"
+                    placeholder="Otsikko englanniksi (ei pakollinen)"
+                    value={article.title_en}
+                    onChange={e => this.changeArticle(e, i)}
+                  />
+                </Col>
+              </FormGroup>
+
+              <Input
+                style={{ height: 200 }}
+                type="textarea"
+                name="text"
+                placeholder="Teksti"
+                value={article.text}
+                onChange={e => this.changeArticle(e, i)}
+              />
+            </div>
           ))}
           <Button color="info" block onClick={() => this.addTitle()}>
             Lisää uusi otsikko

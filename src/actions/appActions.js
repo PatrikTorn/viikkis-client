@@ -24,10 +24,6 @@ export const getArticles = () => ({
   payload: httpService.getArticles()
 });
 
-export const getWeek = ({ year, week }) => dispatch => {
-  dispatch(getWeekArticles({ year, week }));
-};
-
 export const getWeekArticles = ({ year, week }) => ({
   type: types.GET_WEEK_ARTICLES.NAME,
   payload: httpService.getWeekArticles({ year, week })
@@ -49,7 +45,7 @@ export const updateArticle = ({ id, text }) => ({
 });
 
 export const createWeek = articles => ({
-  type: types.CREATE_WEEK.name,
+  type: types.CREATE_WEEK.NAME,
   payload: httpService.createArticles(articles)
 });
 
