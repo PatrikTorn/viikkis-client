@@ -10,7 +10,8 @@ const connect = connector(
         socket:state.socket,
         rooms:state.app.rooms,
         year:state.config.year,
-        week:state.config.week
+        week:state.config.week,
+        isAdmin: state.app.user.admin
     }), 
     {
         deleteArticle:actions.app.deleteArticle,
@@ -56,7 +57,7 @@ class WeekList extends Component {
                                     <Badge color="warning">{lastEdited(article.edited_at)}</Badge> {' '}
                                     {this.socketsOnline(article.id) && <Badge color="info">joku muokkaamassa</Badge>}
                                     
-                                    <Button color="danger" outline size="sm" style={{ float: 'right' }} onClick={() => this.deleteArticle(article.id)}>X</Button>
+                                    {this.props.isAdmin && <Button color="danger" outline size="sm" style={{ float: 'right' }} onClick={() => this.deleteArticle(article.id)}>X</Button>}
 
                                 </ListGroupItem>
                             ))

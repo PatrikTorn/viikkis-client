@@ -1,14 +1,12 @@
 import React, { Component } from "react";
 import {
   Button,
-  Form,
-  FormGroup,
-  Input,
   Modal,
   ModalHeader,
   ModalBody,
   ModalFooter,
-  ButtonGroup
+  ButtonGroup,
+  Input
 } from "reactstrap";
 import Editor from "../editor";
 import { createMarkdownTOC, mdToHtml } from "../tools/articleTools";
@@ -16,12 +14,14 @@ import {
   MD_CONFIG,
   MD_CONFIG_TOC,
   SUMMARY_BOTTOM,
-  SUMMARY_TOP
+  SUMMARY_TOP,
+  EMAIL_SUBJECT
 } from "../constants";
 import { connector, actions } from "../actions";
-import { mjml2html } from "../services/httpService";
+import { mjml2html, sendEmail } from "../services/httpService";
 import { createMjml } from "../tools/articleTools";
 import { toast } from "react-toastify";
+
 
 const connect = connector(
   state => ({
@@ -30,6 +30,7 @@ const connect = connector(
     now: state.config.now,
     socket: state.socket,
     config: state.config.config,
+    isAdmin: state.app.user.admin,
     summary: state.app.articles
       .sort((a, b) => a.position - b.position)
       .reduce((acc, a) => acc + "\n \n" + a.text, ``)
@@ -43,8 +44,11 @@ const connect = connector(
 
 class Summary extends Component {
   state = {
-    number: 0,
-    showModal: false
+    showModal: false,
+    password:'',
+    recipient:this.props.config.recipient,
+    sender:this.props.config.sender,
+    attachments:[]
   };
 
   componentDidMount() {
@@ -73,8 +77,7 @@ class Summary extends Component {
     const mjml = createMjml(
       [tableOfContents, this.props.summary],
       this.props.config,
-      this.props.week,
-      this.state.number
+      this.props.week
     );
     mjml2html(mjml)
       .then(res => res.json())
@@ -82,18 +85,25 @@ class Summary extends Component {
       .catch(e => toast.error("virhe"));
   }
 
-  // sendEmail(){
-  //     // NOT IN USE
-  //     const tableOfContents = createMarkdownTOC(this.props.summary);
-  //     const mjml = createMjml([tableOfContents, this.props.summary]);
-  //     sendEmail(mjml)
-  //     .then(() => toast.success("Sähköposti lähetetty"))
-  //     .catch(e => toast.error("Ongelma sähköpostin lähetyksessä"))
-  // }
+  sendEmail(){
+      const tableOfContents = createMarkdownTOC(this.props.summary);
+      const mjml = createMjml([tableOfContents, this.props.summary], this.props.config, this.props.week);
+      const {sender, recipient, password, attachments} = this.state;
+      const subject = EMAIL_SUBJECT(this.props.config);
+      sendEmail(mjml, sender, recipient, password, subject, attachments)
+      .then((res) => {
+        if (res.status === 200) {
+          toast.success("Sähköposti lähetetty")
+        } else {
+          toast.error("Ongelma sähköpostin lähetyksessä")
+        }
+      })
+      .catch(e => toast.error("Ongelma sähköpostin lähetyksessä"));
+  }
 
   exportMd() {
     let content = (
-      MD_CONFIG(this.props.config, this.props.week, this.state.number) +
+      MD_CONFIG(this.props.config, this.props.week) +
       MD_CONFIG_TOC +
       this.props.summary
     ).replace(/\n/g, "\r\n");
@@ -105,8 +115,7 @@ class Summary extends Component {
     const mjml = createMjml(
       [tableOfContents, this.props.summary],
       this.props.config,
-      this.props.week,
-      this.state.number
+      this.props.week
     ).replace(/\n/g, "\r\n");
     this.createBlob("txt", mjml);
   }
@@ -116,8 +125,7 @@ class Summary extends Component {
     const topValue = SUMMARY_TOP(
       this.props.week,
       tableOfContents,
-      this.props.config,
-      this.state.number
+      this.props.config
     );
     const bottomValue = SUMMARY_BOTTOM(this.props.config);
     const editorStyle = {
@@ -128,37 +136,55 @@ class Summary extends Component {
     return (
       <React.Fragment>
         <Modal isOpen={this.state.showModal} toggle={() => this.toggleModal()}>
-          <ModalHeader>Määritä viikkiksen numero</ModalHeader>
+          <ModalHeader>Lataa tai lähetä viikkis</ModalHeader>
           <ModalBody>
-            <Form>
-              <FormGroup>
-                <Input
-                  type="number"
-                  id="number"
-                  value={this.state.number}
-                  onChange={e => this.setState({ number: e.target.value })}
-                />
-              </FormGroup>
-            </Form>
+              <h5>Lähetä viikkis sähköpostilla</h5>
+              Vastaanottajan sähköposti:
+              <Input
+                  name="recipient"
+                  type="email"
+                  value={this.state.recipient}
+                  onChange={e => this.setState({ recipient: e.target.value })}
+              />
+              Liitteet:
+              <Input type="file" multiple name="file" onChange={e => this.setState({attachments:Array.from(e.target.files)})}/>
+              <hr />
+              Lähettäjän sähköposti:
+              <Input
+                  name="sender"
+                  type="email"
+                  value={this.state.sender}
+                  onChange={e => this.setState({ sender: e.target.value })}
+              />
+              Lähettäjän salasana:
+              <Input
+                  name="email_password"
+                  type="password"
+                  value={this.state.password}
+                  onChange={e => this.setState({ password: e.target.value })}
+              />
+              <Button block className="mt-2" color="success" onClick={() => this.sendEmail()}>
+                <i className="fa fa-envelope" /> Lähetä
+              </Button>
           </ModalBody>
           <ModalFooter>
             <ButtonGroup>
-              <Button color="success" onClick={() => this.exportMd()}>
-                Lataa md
+              <Button color="info" onClick={() => this.exportMd()}>
+                <i className="fa fa-download" /> MD
               </Button>
               <Button color="primary" onClick={() => this.exportHtml()}>
-                Lataa html
+                <i className="fa fa-download" /> HTML
               </Button>
-              <Button color="secondary" onClick={() => this.exportMjml()}>
-                Lataa mjml
+              <Button color="warning" onClick={() => this.exportMjml()}>
+                <i className="fa fa-download" /> MJML
               </Button>
             </ButtonGroup>
           </ModalFooter>
         </Modal>
 
-        <Button color="success" block onClick={() => this.toggleModal()}>
-          Lataa viikkis
-        </Button>
+        {this.props.isAdmin && <Button color="success" block onClick={() => this.toggleModal()}>
+          Lataa tai lähetä viikkis
+        </Button>}
 
         <div style={editorStyle}>
           <Editor

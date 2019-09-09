@@ -44,10 +44,12 @@ export const SCREENS = {
   CONFIG_SETTINGS: "CONFIG_SETTINGS"
 };
 
-export const MD_CONFIG = (config, week, number) =>
+export const EMAIL_SUBJECT = (config) => `Indecsin Viikkotiedote ${config.number} — Indecs' Newsletter ${config.number}`;
+
+export const MD_CONFIG = (config, week) =>
   `otsikon_ylle: ${config.guild}
-otsikon_alle: Numero ${number} – Viikko ${week}
-sposti_aihe: Indecsin Viikkotiedote ${number} — Indecs' Newsletter ${number}
+otsikon_alle: Numero ${config.number} – Viikko ${week}
+sposti_aihe: Indecsin Viikkotiedote ${config.number} — Indecs' Newsletter ${config.number}
 url: ${config.url}
 nimi: ${config.name}
 titteli: ${config.job} / ${config.job_en}
@@ -68,11 +70,11 @@ export const MD_CONFIG_TOC = `
 
 `;
 
-export const SUMMARY_TOP = (week, tableOfContents, config, number) => `
+export const SUMMARY_TOP = (week, tableOfContents, config) => `
 <font class="margin"></font>
 <font class="top-kilta">${config.guild}</font>
 <font class="top-viikkotiedote">Viikkotiedote</font>
-<font class="top-numero">Numero ${number} – Viikko ${week}</font>
+<font class="top-numero">Numero ${config.number} – Viikko ${week}</font>
 <font class="margin"></font>
 <font class="top-toc"> Sisällysluettelo – Table of contents</font>
 ${tableOfContents}

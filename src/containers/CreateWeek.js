@@ -9,10 +9,11 @@ import * as httpService from "../services/httpService";
 const connect = connector(
   state => ({
     year: state.config.year,
-    week: state.config.week
+    week: state.config.week,
+    number: state.config.config.number
   }),
   {
-    createWeek: actions.app.createWeek
+    createWeek: actions.app.createWeek,
     updateConfig: actions.config.updateConfig
   }
 );

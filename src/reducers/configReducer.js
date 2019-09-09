@@ -21,7 +21,10 @@ let initialState = {
     phone: "",
     university: "",
     university_en: "",
-    url: ""
+    url: "",
+    sender:"",
+    recipient:"",
+    number:0
   }
 };
 

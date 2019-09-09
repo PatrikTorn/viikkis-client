@@ -55,11 +55,13 @@ export const mjml2html = mjml =>
     body: mjml
   });
 
-export const sendEmail = mjml =>
-  fetch(`${SOCKET_ENDPOINT}/send_email`, {
-    method: "POST",
-    headers: { "Content-Type": "text/html" },
-    body: mjml
-  });
-
-// export const createWeek = (articles) => request(Method.ALL, `/articles/${id}`, JSON.stringify(text))
+export const sendEmail = (mjml, sender, recipient, password, subject, attachments) => {
+  const formData = new FormData()
+  const json = JSON.stringify({mjml, sender, recipient, subject});
+  attachments.forEach((file, i) => {
+    formData.append(i, file)
+  })
+  formData.append("body", new Blob([json]));
+  return axios.post(`${SOCKET_ENDPOINT}/send_email`, formData, {headers:{Authorization:password}})
+ 
+}

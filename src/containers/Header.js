@@ -8,7 +8,8 @@ const connect = connector(
     state => ({
         email:state.app.user.email,
         logged:state.app.logged,
-        socketsLength:state.app.sockets.length
+        socketsLength:state.app.sockets.length,
+        isAdmin: state.app.user.admin
     }), 
     {
         logout:actions.app.logout,
@@ -38,7 +39,7 @@ class Header extends Component {
                 <DropdownItem divider />
                 <DropdownItem disabled><i className="fa fa-users" style={{marginRight:5}}></i> {this.props.socketsLength} paikalla</DropdownItem>
                 <DropdownItem divider />
-                <DropdownItem onClick={() => this.props.navigate(SCREENS.CONFIG_SETTINGS)}><i className="fa fa-cog" style={{marginRight:5}}></i> Asetukset</DropdownItem>
+                <DropdownItem disabled={this.props.isAdmin ? false : true}onClick={() => this.props.navigate(SCREENS.CONFIG_SETTINGS)}><i className="fa fa-cog" style={{marginRight:5}}></i> Asetukset</DropdownItem>
                 <DropdownItem divider />
                 <DropdownItem onClick={() => this.logout()}><i className="fa fa-sign-out-alt" style={{marginRight:5}}></i>Kirjaudu ulos</DropdownItem>
                 </DropdownMenu>

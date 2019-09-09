@@ -1,6 +1,7 @@
 import React from "react";
 import { connector, actions } from "../actions";
 import { Col, Input, Row, Button } from "reactstrap";
+import { toast } from "react-toastify";
 
 const connect = connector(
   state => ({
@@ -19,7 +20,9 @@ class ConfigSettings extends React.Component {
   }
 
   updateConfig() {
-    this.props.updateConfig(this.state);
+    this.props.updateConfig(this.state)
+      .then(() => toast.success("Asetukset päivitetty"))
+      .catch(e => toast.error("Virhe asetuksien päivityksessä"));
   }
 
   render() {

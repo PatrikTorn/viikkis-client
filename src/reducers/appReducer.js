@@ -21,7 +21,10 @@ let initialState = {
   },
   rooms: {},
   logged: false,
-  user: {},
+  user: {
+    admin:false,
+    email:''
+  },
   sockets: []
 };
 

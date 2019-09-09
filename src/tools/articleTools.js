@@ -121,14 +121,14 @@ export const createMarkdownTOC = value => {
     }, []);
 };
 
-export const createMjml = (content, config, week, number) => {
+export const createMjml = (content, config, week) => {
   if (typeof content == "array") {
     content = content.join("\n\n");
   }
   return `
 <mjml>
     <mj-head>
-        <mj-title>Indecsin Viikkotiedote ${number} — Indecs' Newsletter ${number}</mj-title>
+        <mj-title>Indecsin Viikkotiedote ${config.number} — Indecs' Newsletter ${config.number}</mj-title>
         <mj-style inline="inline">
         p       {{ font-size: 16px; margin: 10px 0px}}
         h1      {{ font-size: 25px; font-weight:900; }}
@@ -172,7 +172,7 @@ export const createMjml = (content, config, week, number) => {
                   config.guild
                 }</mj-text>
                 <mj-text font-size="40px" font-weight="900" font-style="italic" text-transform="uppercase" line-height="40px" padding-top="0px" padding-bottom="2px" color="#C01F29" align="center">Viikkotiedote</mj-text>
-                <mj-text font-size="22px" font-weight="700" padding-top="0px" text-transform="uppercase" padding-bottom="80px" color="#2e3131" align="center">Numero ${number} — Viikko ${week}</mj-text>
+                <mj-text font-size="22px" font-weight="700" padding-top="0px" text-transform="uppercase" padding-bottom="80px" color="#2e3131" align="center">Numero ${config.number} — Viikko ${week}</mj-text>
             </mj-column>
         </mj-section>
 
