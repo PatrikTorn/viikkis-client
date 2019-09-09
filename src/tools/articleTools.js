@@ -1,24 +1,8 @@
 import md2html from "../editor/helpers/md2html";
 import md2mjml from "../editor/helpers/md2mjml";
 
-const config = {
-  otsikon_ylle: "Tuotantotalouden kilta Indecs",
-  otsikon_alle: "Numero 1 — Viikko 1",
-  sposti_aihe: "Indecsin Viikkotiedote 1 — Indecs' Newsletter 1",
-  url: "https://www.indecs.fi",
-  nimi: "Leevi Törnblom",
-  titteli: "Sihteeri / Secretary",
-  kilta: "Tuotantotalouden kilta Indecs Ry",
-  guild: "Guild of Industrial Engineering and Management Indecs",
-  yliopisto: "Tampereen teknillinen yliopisto",
-  university: "Tampere University of Technology",
-  puhelin: "0408431989",
-  sposti: "sihteeri@indecs.fi",
-  internet: "www.indecs.fi"
-};
-
 export const formatTitle = (fi, en) => {
-  return en ? `${fi} - ${en}` : `${fi}`;
+  return en ? `${fi} – ${en}` : `${fi}`;
 };
 
 export const lastEdited = editedAt => {

@@ -70,13 +70,15 @@ class CreateWeek extends Component {
       if (data.length === 0) throw new Error("Ei viime viikon tuloksia");
       this.setState({
         articles: data
-          .slice(0)
-          .reverse()
+          .sort((a, b) => a.position - b.position)
           .map(a => ({
-            ...a,
+            title: a.title,
+            title_en: a.title_en,
+            text: a.text,
+            text_en: a.text_en,
             year: this.props.year,
             week: this.props.week,
-            text_en: ""
+            position: a.position
           }))
       });
     } catch (e) {
