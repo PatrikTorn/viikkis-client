@@ -64,14 +64,14 @@ const headingParse = (text, level, raw) => {
         _3 = 0;
         _2 = 0;
         _1 = _1 + 1;
-        return `<mj-divider /><mj-text mj-class="heading${level}">\n<h${level}>${_1}. ${escape(text)}</h${level}></mj-text>\n`;
+        return `<mj-divider /><mj-text mj-class="heading${level}">\n<h${level} id="toc_${_1}">${_1}. ${escape(text)}</h${level}></mj-text>\n`;
     } else if (level == 2) {
         _3 = 0;
         _2 = _2 + 1;
-        return `<mj-text mj-class="heading${level}">\n<h${level}>${_1}.${_2}. ${escape(text)}</h${level}></mj-text>\n`;
+        return `<mj-text mj-class="heading${level}">\n<h${level} id="toc_${_1}_${_2}">${_1}.${_2}. ${escape(text)}</h${level}></mj-text>\n`;
     } else {
         _3 = _3 + 1;
-        return `<mj-text mj-class="heading${level}">\n<h${level}>${_1}.${_2}.${_3}. ${escape(text)}</h${level}></mj-text>\n`;
+        return `<mj-text mj-class="heading${level}">\n<h${level} id="toc_${_1}_${_2}_${_3}">${_1}.${_2}.${_3}. ${escape(text)}</h${level}></mj-text>\n`;
     }
 }
 
@@ -120,8 +120,6 @@ const replace = (content) => {
 }
 
 
-
-
 renderer.paragraph = paragraphParse
 renderer.link = linkParse
 renderer.heading = headingParse
@@ -134,6 +132,8 @@ renderer.listitem = listItemParse
 
 export default content => {
   if (typeof content != 'string') return ''
-
+  _1 = 0;
+  _2 = 0;
+  _3 = 0;
   return marked(replace(content), { renderer })
 }

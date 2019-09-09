@@ -236,15 +236,15 @@
   }
   .for-markdown-preview h1:before {
     counter-increment: h1;
-    content: counter(h1) ". ";
+    /* content: counter(h1) ". "; */
   }
   .for-markdown-preview h2:before {
     counter-increment: h2;
-    content: counter(h1) "." counter(h2) ". ";
+    /* content: counter(h1) "." counter(h2) ". "; */
   }
   .for-markdown-preview h3:before {
     counter-increment: h3;
-    content: counter(h1) "." counter(h2) "." counter(h3) ". ";
+    /* content: counter(h1) "." counter(h2) "." counter(h3) ". "; */
   }
   .for-markdown-preview .customButton {
     color: #fff;

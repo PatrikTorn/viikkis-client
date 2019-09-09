@@ -61,27 +61,28 @@ export const lastEdited = editedAt => {
 };
 
 export const mdToHtml = md => {
-  if (typeof md == "object") {
-    return md2html(md.join("\n\n"));
-  } else {
-    return md2html(md);
+  if (typeof md === "object") {
+    md = md.join("\n\n");
   }
+    return md2html(headingCaps(md));
 };
 export const mdToMjml = md => {
   if (typeof md === "object") {
     md = md.join("\n\n");
   }
-  return md2mjml(
-    md.split("\n").reduce((acc, str) => {
-      ["#", "##", "###"].map(i => {
-        if (str.substr(0, i.length) === i && str.charAt(i.length) !== "#")
-          str = [str.slice(0, i.length), " ", str.slice(i.length)].join("");
-      });
-
-      return acc + str + "\n";
-    }, "")
-  );
+  return md2mjml(headingCaps(md));
 };
+
+export const headingCaps = (md) => {
+  return md.split("\n").reduce((acc, str) => {
+    ["#", "##", "###"].map(i => {
+      if (str.substr(0, i.length) === i && str.charAt(i.length) !== "#")
+        str = [str.slice(0, i.length), " ", str.slice(i.length)].join("");
+    });
+
+    return acc + str + "\n";
+  }, "")
+}
 
 export const createMarkdownTOC = value => {
   let _1 = 0;
@@ -100,21 +101,21 @@ export const createMarkdownTOC = value => {
           `    - [${_1}.${_2}.${_3}. ${str.replace(
             "###",
             ""
-          )}](javascript:void(0);)\n`
+          )}](#toc_${_1}_${_2}_${_3})\n`
         );
       } else if (str.substring(0, 2) === "##") {
         _3 = 0;
         _2 = _2 + 1;
         return (
           acc +
-          `  - [${_1}.${_2}. ${str.replace("##", "")}](javascript:void(0);)\n`
+          `  - [${_1}.${_2}. ${str.replace("##", "")}](#toc_${_1}_${_2})\n`
         );
       } else if (str.substring(0, 1) === "#") {
         _3 = 0;
         _2 = 0;
         _1 = _1 + 1;
         return (
-          acc + `- [${_1}. ${str.replace("#", "")}](javascript:void(0);)\n`
+          acc + `- [${_1}. ${str.replace("#", "")}](#toc_${_1})\n`
         );
       } else return acc;
     }, []);
