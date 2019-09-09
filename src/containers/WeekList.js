@@ -38,8 +38,18 @@ class WeekList extends Component {
     render() {
         const {articles} = this.props;
 
+        const NoArticles = () => {
+            return (
+                <div style={{textAlign:'center', paddingTop:20, paddingBottom:20}}>
+                    <i className="fa fa-database" style={{fontSize:60}} />
+                    <h2>Ei artikkeleja</h2>
+                    <h5>Sihteeri ei ole vielä luonut tämän viikon artikkeleja</h5>
+                </div>
+            )
+        }
+
         return articles.length === 0 ? (
-            <CreateWeek />
+            this.props.isAdmin ? <CreateWeek /> : <NoArticles />
         ) : (
                 <React.Fragment>
                     <Button block color="success" onClick={() => this.props.navigate('SUMMARY')}>Näytä kooste viikkotiedotteesta</Button>
