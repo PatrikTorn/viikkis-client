@@ -13,6 +13,7 @@ const connect = connector(
   }),
   {
     createWeek: actions.app.createWeek
+    updateConfig: actions.config.updateConfig
   }
 );
 
@@ -40,7 +41,14 @@ class CreateWeek extends Component {
       year: this.props.year,
       week: this.props.week
     }));
+    
+    let nextNumber = this.props.number+1;
+    if (this.props.week < 6 && this.props.number > 8) {
+      nextNumber = 1;
+    }
+
     this.props.createWeek(articles);
+    this.props.updateConfig({number:nextNumber})
   }
 
   deleteTitle(i) {
