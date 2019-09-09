@@ -2,14 +2,11 @@
 
 body {
   margin: 0;
-  background:radial-gradient(rgba(0,0,0, 0.2) 30%, rgba(0,0,0, 0.3) 70%, rgba(0,0,0, 0.6) 90%), url(./images/background.jpg);
-  -webkit-background-size: cover;
-  -moz-background-size: cover;
-  -o-background-size: cover;
+  background:radial-gradient(rgba(0,0,0, 0.2) 30%, rgba(0,0,0, 0.3) 70%, rgba(0,0,0, 0.6) 90%), url(./images/bg_repeat.png);
+
   background-position-x: center;
   background-position-y: center;
   background-attachment: fixed;
-  background-size: cover;
   height: 100vh;
 }
 
